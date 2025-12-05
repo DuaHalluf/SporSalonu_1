@@ -1,0 +1,41 @@
+﻿@model IEnumerable<SporSalon_1.Models.Uye>
+
+@{
+    ViewData["Title"] = "Üye Listesi";
+}
+
+<h1>Üye Listesi </h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Yeni Üye Oluştur</a>
+</p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Ad Soyad</th>
+            <th>Boy (cm)</th>
+            <th>Kilo (kg)</th>
+            <th>Doğum Tarihi</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.AdSoyad)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Boy)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Kilo)
+                </td>
+                <td>
+                    @item.DogumTarihi?.ToString("dd.MM.yyyy")
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

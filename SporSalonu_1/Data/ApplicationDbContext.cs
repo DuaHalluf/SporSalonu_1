@@ -10,7 +10,7 @@ namespace SporSalon_1.Data
             : base(options)
         {
         }
-
+        public DbSet<Uye> Uyeler{ get; set; }
         public DbSet<SporSalonu> SporSalonlari { get; set; }
         public DbSet<Hizmet> Hizmetler { get; set; }
         public DbSet<Antrenor> Antrenorler { get; set; }

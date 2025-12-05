@@ -5,9 +5,10 @@ namespace SporSalon_1.Models
 {
     public class Uye : IdentityUser
     {
+        
         [Required(ErrorMessage = "Ad Soyad zorunludur.")]
         [Display(Name = "Ad Soyad")]
-        public string AdSoyad { get; set; }
+        public string? AdSoyad { get; set; }
 
         [Display(Name = "Boy (cm)")]
         public double? Boy { get; set; } // للطول

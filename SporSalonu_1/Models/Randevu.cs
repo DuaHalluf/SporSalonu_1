@@ -28,7 +28,7 @@ namespace SporSalon_1.Models
         // --- العلاقات (Foreign Keys) ---
 
         // 1. العضو
-        public string UyeId { get; set; }
+        public string? UyeId { get; set; }
         [ForeignKey("UyeId")]
         public Uye Uye { get; set; }
 
