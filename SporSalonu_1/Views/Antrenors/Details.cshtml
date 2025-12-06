@@ -1,48 +1,76 @@
 ﻿@model SporSalon_1.Models.Antrenor
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Detaylar";
 }
 
-<h1>Details</h1>
+<h1>Detaylar</h1>
+<h4>Antrenor Bilgileri</h4>
+<hr />
 
-<div>
-    <h4>Antrenor</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.AdSoyad)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.AdSoyad)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.UzmanlikAlani)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.UzmanlikAlani)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ResimUrl)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ResimUrl)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CalismaSaatleri)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CalismaSaatleri)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.SporSalonu)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.SporSalonu.Ad)
-        </dd>
-    </dl>
+<div class="row">
+
+    @* العمود الأيسر: البيانات التفصيلية (7 أعمدة) *@
+    <div class="col-md-7">
+        <dl class="row">
+            {{... (Your existing text display code with mb-3) ...}}
+            @* تم حذف الكود النصي لتجنب التكرار - افترض أن هذا هو الكود الحالي لديك *@
+            <dt class="col-sm-4 text-primary mb-3">
+                @Html.DisplayNameFor(model => model.AdSoyad)
+            </dt>
+            <dd class="col-sm-8 mb-3">
+                @Html.DisplayFor(model => model.AdSoyad)
+            </dd>
+            @* ... (باقي الحقول) ... *@
+            <dt class="col-sm-4 text-primary mb-3">
+                @Html.DisplayNameFor(model => model.UzmanlikAlani)
+            </dt>
+            <dd class="col-sm-8 mb-3">
+                @Html.DisplayFor(model => model.UzmanlikAlani)
+            </dd>
+            <dt class="col-sm-4 text-primary mb-3">
+                @Html.DisplayNameFor(model => model.CalismaSaatleri)
+            </dt>
+            <dd class="col-sm-8 mb-3">
+                @Html.DisplayFor(model => model.CalismaSaatleri)
+            </dd>
+            <dt class="col-sm-4 text-primary">
+                Spor Salonu
+            </dt>
+            <dd class="col-sm-8">
+                @Html.DisplayFor(model => model.SporSalonu.Ad)
+            </dd>
+        </dl>
+    </div>
+
+    @* العمود الأيمن: عرض الصورة داخل الكرت (Card) *@
+    <div class="col-md-5">
+        @if (!string.IsNullOrEmpty(Model.ResimUrl))
+        {
+            <div class="card shadow-sm border-primary">
+                <div class="card-header bg-primary text-white text-center">Fotoğraf</div>
+                <div class="card-body text-center">
+                    <img src="@Model.ResimUrl" class="img-thumbnail"
+                         style="width: 100%; max-width: 280px; height: 280px; object-fit: cover;"
+                         alt="Antrenör Fotoğrafı" />
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-warning text-center">Resim Yok</div>
+        }
+    </div>
+
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+
+<div class="mt-4">
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Düzenle</a>
+    <a asp-action="Index" class="btn btn-secondary">Listeye Geri Dön</a>
 </div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

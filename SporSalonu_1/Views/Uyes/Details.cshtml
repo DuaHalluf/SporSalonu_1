@@ -1,0 +1,67 @@
+﻿@model SporSalon_1.Models.Uye
+
+@{
+    ViewData["Title"] = "Üye Detayları";
+}
+
+<div class="container mt-5">
+    <div class="card shadow-lg border-0">
+        <div class="row g-0">
+            <div class="col-md-4 d-flex align-items-center justify-content-center bg-light p-4">
+                @if (!string.IsNullOrEmpty(Model.ResimUrl))
+                {
+                    <img src="@Model.ResimUrl" alt="@Model.AdSoyad" class="img-fluid rounded-circle shadow"
+                         style="width: 200px; height: 200px; object-fit: cover; border: 5px solid white;" />
+                }
+                else
+                {
+                    <img src="https://via.placeholder.com/200?text=No+Image" alt="Fotoğraf Yok" class="img-fluid rounded-circle shadow"
+                         style="width: 200px; height: 200px; object-fit: cover; border: 5px solid white; opacity: 0.6;" />
+                }
+            </div>
+
+            <div class="col-md-8">
+                <div class="card-body p-4">
+                    <h2 class="card-title fw-bold text-primary mb-4">@Model.AdSoyad</h2>
+
+                    <div class="row mb-3">
+                        <div class="col-sm-4 fw-bold text-muted">E-Posta:</div>
+                        <div class="col-sm-8">@Model.Email</div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-sm-4 fw-bold text-muted">Telefon:</div>
+                        <div class="col-sm-8">
+                            @(Model.PhoneNumber ?? "Belirtilmedi")
+                        </div>
+                    </div>
+
+                    <hr />
+
+                    <div class="row">
+                        <div class="col-6 mb-3">
+                            <div class="fw-bold text-muted">Boy</div>
+                            <div class="fs-5">@(Model.Boy != null ? Model.Boy + " cm" : "-")</div>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <div class="fw-bold text-muted">Kilo</div>
+                            <div class="fs-5">@(Model.Kilo != null ? Model.Kilo + " kg" : "-")</div>
+                        </div>
+                        <div class="col-12 mb-3">
+                            <div class="fw-bold text-muted">Doğum Tarihi</div>
+                            <div>@(Model.DogumTarihi.HasValue? Model.DogumTarihi.Value.ToString("dd.MM.yyyy") : "-")</div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 d-grid gap-2 d-md-block">
+                        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning px-4">
+                            <i class="fa fa-edit"></i> Düzenle
+                        </a>
+                        <a asp-action="Index" class="btn btn-secondary px-4">Listeye Dön</a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

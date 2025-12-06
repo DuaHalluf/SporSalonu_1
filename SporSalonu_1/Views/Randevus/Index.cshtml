@@ -1,71 +1,99 @@
 ﻿@model IEnumerable<SporSalon_1.Models.Randevu>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Randevularım";
 }
 
-<h1>Index</h1>
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-primary">
+            <i class="fa fa-calendar-alt"></i> Randevularım
+        </h2>
+        <a asp-action="Create" class="btn btn-success btn-lg shadow-sm">
+            <i class="fa fa-plus-circle"></i> Yeni Randevu Al
+        </a>
+    </div>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Tarih)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Saat)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.OnaylandiMi)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.OlusturulmaTarihi)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Uye)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Antrenor)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Hizmet)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Tarih)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Saat)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.OnaylandiMi)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.OlusturulmaTarihi)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Uye.Id)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Antrenor.AdSoyad)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Hizmet.Ad)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info text-center shadow-sm p-5" role="alert">
+            <i class="fa fa-info-circle fa-2x mb-3"></i>
+            <h4>Henüz hiç randevunuz yok.</h4>
+            <p>Hemen bir randevu oluşturarak spora başlayın!</p>
+            <a asp-action="Create" class="btn btn-outline-primary mt-2">Randevu Oluştur</a>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var item in Model.OrderByDescending(x => x.Tarih))
+            {
+                // تحديد حالة الموعد (قادم أم انتهى)
+                bool isPast = item.Tarih < DateTime.Today || (item.Tarih == DateTime.Today && item.Saat < DateTime.Now.TimeOfDay);
+                string cardClass = isPast ? "border-secondary bg-light text-muted opacity-75" : "border-primary shadow-sm";
+                string badgeClass = isPast ? "bg-secondary" : "bg-success";
+                string statusText = isPast ? "Geçmiş (Tamamlandı)" : "Gelecek (Aktif)";
+
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100 @cardClass rounded-3 position-relative overflow-hidden">
+
+                        <div class="position-absolute top-0 end-0 m-2">
+                            <span class="badge @badgeClass">@statusText</span>
+                        </div>
+
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                @if (!string.IsNullOrEmpty(item.Antrenor?.ResimUrl))
+                                {
+                                    <img src="@item.Antrenor.ResimUrl" class="rounded-circle border border-2 border-white shadow-sm"
+                                         style="width: 60px; height: 60px; object-fit: cover;" alt="Antrenor">
+                                }
+                                else
+                                {
+                                    <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center text-white"
+                                         style="width: 60px; height: 60px;">
+                                        <i class="fa fa-user"></i>
+                                    </div>
+                                }
+
+                                <div class="ms-3">
+                                    <h5 class="card-title mb-0 fw-bold">@item.Antrenor?.AdSoyad</h5>
+                                    <small class="text-muted">@item.Hizmet?.Ad</small>
+                                </div>
+                            </div>
+
+                            <hr />
+
+                            <div class="row text-center">
+                                <div class="col-6 border-end">
+                                    <div class="fw-bold small text-uppercase text-muted">Tarih</div>
+                                    <div class="fs-5">@item.Tarih.ToString("dd.MM.yyyy")</div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="fw-bold small text-uppercase text-muted">Saat</div>
+                                    <div class="fs-5">@item.Saat.ToString(@"hh\:mm")</div>
+                                </div>
+                            </div>
+
+                            <div class="mt-4 d-flex justify-content-between">
+                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info w-100 me-1">
+                                    <i class="fa fa-info-circle"></i> Detay
+                                </a>
+
+                                @if (!isPast || User.IsInRole("Admin"))
+                                {
+                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning w-100 me-1">
+                                        <i class="fa fa-edit"></i>
+                                    </a>
+                                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger w-100">
+                                        <i class="fa fa-trash"></i>
+                                    </a>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

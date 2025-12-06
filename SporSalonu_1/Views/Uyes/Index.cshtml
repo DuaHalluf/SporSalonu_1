@@ -4,38 +4,59 @@
     ViewData["Title"] = "Üye Listesi";
 }
 
-<h1>Üye Listesi </h1>
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1>Üye Listesi</h1>
+        <a asp-action="Create" class="btn btn-primary">
+            <i class="fa fa-plus"></i> Yeni Üye Ekle
+        </a>
+    </div>
 
-<p>
-    <a asp-action="Create" class="btn btn-primary">Yeni Üye Oluştur</a>
-</p>
-
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Ad Soyad</th>
-            <th>Boy (cm)</th>
-            <th>Kilo (kg)</th>
-            <th>Doğum Tarihi</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
+    <table class="table table-striped table-hover align-middle">
+        <thead class="table-dark">
             <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.AdSoyad)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Boy)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Kilo)
-                </td>
-                <td>
-                    @item.DogumTarihi?.ToString("dd.MM.yyyy")
-                </td>
+                <th>Fotoğraf</th>
+                <th>@Html.DisplayNameFor(model => model.AdSoyad)</th>
+                <th>@Html.DisplayNameFor(model => model.Email)</th>
+                <th>@Html.DisplayNameFor(model => model.PhoneNumber)</th>
+                <th>İşlemler</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @if (!string.IsNullOrEmpty(item.ResimUrl))
+                        {
+                            <img src="@item.ResimUrl" alt="Profil" width="60" height="60"
+                                 style="border-radius: 50%; object-fit: cover; border: 2px solid #ddd;" />
+                        }
+                        else
+                        {
+                            <img src="/images/default-user.png" alt="Yok" width="60" height="60"
+                                 style="border-radius: 50%; object-fit: cover; opacity: 0.5;"
+                                 onerror="this.style.display='none'" />
+                        }
+                    </td>
+                    <td class="fw-bold">
+                        @Html.DisplayFor(modelItem => item.AdSoyad)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Email)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.PhoneNumber)
+                    </td>
+                    <td>
+                        <div class="btn-group" role="group">
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning">Düzenle</a>
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info">Detay</a>
+                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger">Sil</a>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

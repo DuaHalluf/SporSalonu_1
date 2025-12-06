@@ -1,54 +1,89 @@
 ﻿@model SporSalon_1.Models.Antrenor
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Düzenle";
 }
 
-<h1>Edit</h1>
+<h1>Düzenle</h1>
 
-<h4>Antrenor</h4>
+<h4>Antrenor Bilgilerini Düzenle</h4>
 <hr />
+
 <div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
+    @* العمود الأيسر: حقول البيانات (Inputs) *@
+    <div class="col-md-7">
+        <form asp-action="Edit" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            @* حقول مخفية ضرورية *@
             <input type="hidden" asp-for="Id" />
-            <div class="form-group">
-                <label asp-for="AdSoyad" class="control-label"></label>
+            <input type="hidden" asp-for="ResimUrl" />
+
+            @* حقول الإدخال *@
+            <div class="form-group mb-3">
+                <label asp-for="AdSoyad" class="control-label">Adı Soyadı</label>
                 <input asp-for="AdSoyad" class="form-control" />
                 <span asp-validation-for="AdSoyad" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="UzmanlikAlani" class="control-label"></label>
+
+            <div class="form-group mb-3">
+                <label asp-for="UzmanlikAlani" class="control-label">Uzmanlık Alanı</label>
                 <input asp-for="UzmanlikAlani" class="form-control" />
                 <span asp-validation-for="UzmanlikAlani" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="ResimUrl" class="control-label"></label>
-                <input asp-for="ResimUrl" class="form-control" />
-                <span asp-validation-for="ResimUrl" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CalismaSaatleri" class="control-label"></label>
+
+            <div class="form-group mb-3">
+                <label asp-for="CalismaSaatleri" class="control-label">Çalışma Saatleri</label>
                 <input asp-for="CalismaSaatleri" class="form-control" />
                 <span asp-validation-for="CalismaSaatleri" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="SporSalonuId" class="control-label"></label>
+
+            <div class="form-group mb-3">
+                <label asp-for="SporSalonuId" class="control-label">Spor Salonu</label>
                 <select asp-for="SporSalonuId" class="form-control" asp-items="ViewBag.SporSalonuId"></select>
                 <span asp-validation-for="SporSalonuId" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+
+            @* حقل رفع الملفات مع توضيح *@
+            <div class="form-group mb-4">
+                <label for="file" class="control-label text-success">Yeni Fotoğraf Yükle (Değiştirmek için)</label>
+                <input type="file" name="file" id="file" class="form-control" />
+                <small class="text-muted">Fotoğraf seçmezseniz, mevcut fotoğraf korunacaktır.</small>
+            </div>
+
+            @* زر الحفظ *@
+            <div class="form-group mt-4">
+                <input type="submit" value="Kaydet" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-secondary">İptal</a>
             </div>
         </form>
     </div>
-</div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
+    @* العمود الأيمن: عرض الصورة الحالية في بطاقة (Card) *@
+    <div class="col-md-5 mt-4">
+        @if (!string.IsNullOrEmpty(Model.ResimUrl))
+        {
+            <div class="card shadow-sm border-primary">
+                <div class="card-header bg-primary text-white text-center">Mevcut Fotoğraf</div>
+                <div class="card-body text-center">
+                    <img src="@Model.ResimUrl" class="img-thumbnail"
+                         style="width: 100%; max-width: 280px; height: 280px; object-fit: cover;"
+                         alt="Mevcut Antrenör Fotoğrafı" />
+                </div>
+                <div class="card-footer text-muted text-center">
+                    Fotoğraf değiştirmek istemiyorsanız, لا ترفع ملفاً جديداً.
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-warning text-center">Mevcut bir fotoğraf bulunamadı. Lütfen bir tane yükleyin.</div>
+        }
+    </div>
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

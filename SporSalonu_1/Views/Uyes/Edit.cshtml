@@ -1,0 +1,84 @@
+﻿@model SporSalon_1.Models.Uye
+
+@{
+    ViewData["Title"] = "Üye Düzenle";
+}
+
+<div class="container mt-4">
+    <h1>Bilgileri Düzenle</h1>
+    <h4>@Model.AdSoyad</h4>
+    <hr />
+
+    <div class="row">
+        <div class="col-md-6">
+            <form asp-action="Edit" enctype="multipart/form-data">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <input type="hidden" asp-for="Id" />
+
+                <div class="text-center mb-4">
+                    @if (!string.IsNullOrEmpty(Model.ResimUrl))
+                    {
+                        <img src="@Model.ResimUrl" style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover; border: 4px solid #ddd;" />
+                        <p class="text-muted mt-2">Mevcut Fotoğraf</p>
+                    }
+                    else
+                    {
+                        <p class="text-muted">Fotoğraf Yok</p>
+                    }
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="AdSoyad" class="control-label"></label>
+                    <input asp-for="AdSoyad" class="form-control" />
+                    <span asp-validation-for="AdSoyad" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="Email" class="control-label"></label>
+                    <input asp-for="Email" class="form-control" readonly style="background-color: #e9ecef;" />
+                    <small class="text-muted">E-Posta değiştirilemez.</small>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="PhoneNumber" class="control-label">Telefon</label>
+                    <input asp-for="PhoneNumber" class="form-control" />
+                    <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 form-group mb-3">
+                        <label asp-for="Boy" class="control-label"></label>
+                        <input asp-for="Boy" class="form-control" />
+                    </div>
+                    <div class="col-md-6 form-group mb-3">
+                        <label asp-for="Kilo" class="control-label"></label>
+                        <input asp-for="Kilo" class="form-control" />
+                    </div>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="DogumTarihi" class="control-label"></label>
+                    <input asp-for="DogumTarihi" class="form-control" />
+                </div>
+
+                <div class="form-group mb-4">
+                    <label class="control-label fw-bold">Fotoğrafı Değiştir (İsteğe bağlı)</label>
+                    <input type="file" name="file" class="form-control" accept="image/*" />
+                    <small class="text-muted">Fotoğrafı değiştirmek istemiyorsanız boş bırakın.</small>
+                </div>
+
+                <div class="form-group">
+                    <input type="submit" value="Kaydet" class="btn btn-warning px-4" />
+                    <a asp-action="Index" class="btn btn-secondary">İptal</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

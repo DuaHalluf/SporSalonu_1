@@ -7,9 +7,12 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using SporSalon_1.Data;
 using SporSalon_1.Models;
+using Microsoft.AspNetCore.Authorization; // 1. 🚨 إضافة مكتبة الحماية
 
 namespace SporSalonu_1.Controllers
 {
+    // 2. 🚨 حماية الكنترولر: الأدمن فقط يدير الصالات
+    [Authorize(Roles = "Admin")]
     public class SporSalonusController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -50,8 +53,6 @@ namespace SporSalonu_1.Controllers
         }
 
         // POST: SporSalonus/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Ad,Adres,CalismaSaatleri,Telefon")] SporSalonu sporSalonu)
@@ -82,8 +83,6 @@ namespace SporSalonu_1.Controllers
         }
 
         // POST: SporSalonus/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Ad,Adres,CalismaSaatleri,Telefon")] SporSalonu sporSalonu)

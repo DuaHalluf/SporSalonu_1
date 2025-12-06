@@ -7,9 +7,12 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using SporSalon_1.Data;
 using SporSalon_1.Models;
+using Microsoft.AspNetCore.Authorization; // 1. 🚨 Added Authorization Namespace
 
 namespace SporSalonu_1.Controllers
 {
+    // 2. 🚨 Protected Controller: Only Admin can manage Services
+    [Authorize(Roles = "Admin")]
     public class HizmetsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -53,12 +56,13 @@ namespace SporSalonu_1.Controllers
         }
 
         // POST: Hizmets/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Ad,Aciklama,Sure,Ucret,SporSalonuId")] Hizmet hizmet)
         {
+            // Remove navigation property validation error if it exists
+            ModelState.Remove("SporSalonu");
+
             if (ModelState.IsValid)
             {
                 _context.Add(hizmet);
@@ -87,8 +91,6 @@ namespace SporSalonu_1.Controllers
         }
 
         // POST: Hizmets/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Ad,Aciklama,Sure,Ucret,SporSalonuId")] Hizmet hizmet)
@@ -97,6 +99,9 @@ namespace SporSalonu_1.Controllers
             {
                 return NotFound();
             }
+
+            // Remove navigation property validation error if it exists
+            ModelState.Remove("SporSalonu");
 
             if (ModelState.IsValid)
             {

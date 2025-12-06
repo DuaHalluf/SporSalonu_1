@@ -1,0 +1,50 @@
+﻿@model SporSalon_1.Models.Uye
+
+@{
+    ViewData["Title"] = "Üye Sil";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0"><i class="fa fa-exclamation-triangle"></i> Silme İşlemi</h4>
+                </div>
+                <div class="card-body">
+                    <h3 class="text-center text-danger mb-4">Bu üyeyi silmek istediğinize emin misiniz?</h3>
+                    <p class="text-center text-muted">Bu işlem geri alınamaz ve üyeye ait tüm randevular silinecektir.</p>
+
+                    <div class="d-flex align-items-center justify-content-center mb-4">
+                        @if (!string.IsNullOrEmpty(Model.ResimUrl))
+                        {
+                            <img src="@Model.ResimUrl" class="rounded-circle border border-3 border-danger" width="120" height="120" style="object-fit: cover;" />
+                        }
+                        <div class="ms-3">
+                            <h4 class="fw-bold">@Model.AdSoyad</h4>
+                            <div class="text-muted">@Model.Email</div>
+                        </div>
+                    </div>
+
+                    <dl class="row border p-3 rounded bg-light mx-2">
+                        <dt class="col-sm-4">Telefon:</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.PhoneNumber)</dd>
+
+                        <dt class="col-sm-4">Doğum Tarihi:</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.DogumTarihi)</dd>
+                    </dl>
+
+                    <div class="d-flex justify-content-center gap-3 mt-4">
+                        <form asp-action="Delete">
+                            <input type="hidden" asp-for="Id" />
+                            <button type="submit" class="btn btn-danger btn-lg px-5">
+                                <i class="fa fa-trash"></i> Evet, Sil
+                            </button>
+                        </form>
+                        <a asp-action="Index" class="btn btn-secondary btn-lg px-5">İptal</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

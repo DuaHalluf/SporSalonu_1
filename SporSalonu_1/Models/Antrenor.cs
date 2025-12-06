@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SporSalon_1.Models
@@ -10,18 +12,21 @@ namespace SporSalon_1.Models
 
         [Required(ErrorMessage = "Ad Soyad zorunludur.")]
         [Display(Name = "Ad Soyad")]
-        public string AdSoyad { get; set; }
+        // 🚨 تم التصحيح: تعيين قيمة أولية فارغة
+        public string AdSoyad { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Uzmanlık alanı zorunludur.")]
         [Display(Name = "Uzmanlık Alanı")]
-        public string UzmanlikAlani { get; set; } // مثال: Pilates Eğitmeni
+        // 🚨 تم التصحيح: تعيين قيمة أولية فارغة
+        public string UzmanlikAlani { get; set; } = string.Empty; // مثال: Pilates Eğitmeni
 
         [Display(Name = "Fotoğraf")]
-        public string? ResimUrl { get; set; }
+        public string? ResimUrl { get; set; } // هذا صحيح بالفعل ومسموح له بـ Null
 
         [Required]
         [Display(Name = "Çalışma Saatleri")]
-        public string CalismaSaatleri { get; set; } // مثال: 09:00 - 17:00
+        // 🚨 تم التصحيح: تعيين قيمة أولية فارغة
+        public string CalismaSaatleri { get; set; } = string.Empty; // مثال: 09:00 - 17:00
 
         // --- ربط المدرب بصالة معينة ---
         [Display(Name = "Spor Salonu")]

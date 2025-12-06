@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/SporSalonu_1.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
 </head>
 <body>
     <header>
@@ -18,37 +19,57 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
 
+                    <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Ana Sayfa</a>
                         </li>
-
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="SporSalonus" asp-action="Index">Spor Salonları</a>
                         </li>
-
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Uyes" asp-action="Index">Üyeler</a>
                         </li>
-
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Antrenors" asp-action="Index">Antrenörler</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Antrenors" asp-action="Index">Antrenorlar</a>
                         </li>
-
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Hizmets" asp-action="Index">Hizmetler</a>
                         </li>
-
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Randevus" asp-action="Index">Randevular</a>
                         </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Gizlilik</a>
-                        </li>
-
                     </ul>
+
+                    <ul class="navbar-nav">
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item">
+                                <span class="nav-link text-dark fw-bold">
+                                    <i class="fa fa-user"></i> Merhaba, @User.Identity.Name
+                                </span>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link btn btn-link text-danger" asp-controller="Account" asp-action="Logout">
+                                    <i class="fa fa-sign-out"></i> Çıkış Yap
+                                </a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-success fw-bold" asp-controller="Account" asp-action="Register">
+                                    <i class="fa fa-user-plus"></i> Kayıt Ol
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-primary fw-bold" asp-controller="Account" asp-action="Login">
+                                    <i class="fa fa-sign-in"></i> Giriş Yap
+                                </a>
+                            </li>
+                        }
+                    </ul>
+
                 </div>
             </div>
         </nav>

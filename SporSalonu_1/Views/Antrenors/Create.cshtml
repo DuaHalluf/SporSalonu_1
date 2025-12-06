@@ -1,52 +1,55 @@
 ﻿@model SporSalon_1.Models.Antrenor
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Yeni Antrenör Ekle";
 }
 
-<h1>Create</h1>
+<h1>Yeni Antrenör Ekle</h1>
 
-<h4>Antrenor</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Create">
+        <form asp-action="Create" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="AdSoyad" class="control-label"></label>
+
+            <div class="form-group mb-3">
+                <label asp-for="AdSoyad" class="control-label">Adı Soyadı</label>
                 <input asp-for="AdSoyad" class="form-control" />
                 <span asp-validation-for="AdSoyad" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="UzmanlikAlani" class="control-label"></label>
+
+            <div class="form-group mb-3">
+                <label asp-for="UzmanlikAlani" class="control-label">Uzmanlık Alanı</label>
                 <input asp-for="UzmanlikAlani" class="form-control" />
                 <span asp-validation-for="UzmanlikAlani" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="ResimUrl" class="control-label"></label>
-                <input asp-for="ResimUrl" class="form-control" />
-                <span asp-validation-for="ResimUrl" class="text-danger"></span>
+
+            <div class="form-group mb-3">
+                <label class="control-label">Fotoğraf Yükle</label>
+                <input type="file" name="file" class="form-control" />
             </div>
-            <div class="form-group">
-                <label asp-for="CalismaSaatleri" class="control-label"></label>
-                <input asp-for="CalismaSaatleri" class="form-control" />
+
+            <div class="form-group mb-3">
+                <label asp-for="CalismaSaatleri" class="control-label">Çalışma Saatleri</label>
+                <input asp-for="CalismaSaatleri" class="form-control" placeholder="Örn: 09:00 - 17:00" />
                 <span asp-validation-for="CalismaSaatleri" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="SporSalonuId" class="control-label"></label>
-                <select asp-for="SporSalonuId" class ="form-control" asp-items="ViewBag.SporSalonuId"></select>
+
+            <div class="form-group mb-3">
+                <label asp-for="SporSalonuId" class="control-label">Spor Salonu</label>
+                <select asp-for="SporSalonuId" class="form-control" asp-items="ViewBag.SporSalonuId"></select>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+
+            <div class="form-group mt-3">
+                <input type="submit" value="Oluştur" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-secondary">İptal</a>
             </div>
         </form>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
