@@ -10,18 +10,18 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 
-// 2. إعداد الهوية (Identity) مع تخفيف شروط كلمة المرور (هذا الجزء المعدل) 🚨
+// 2. إعداد الهوية (Identity) مع تخفيف شروط كلمة المرور لتقبل "sau" 🚨
 builder.Services.AddIdentity<Uye, IdentityRole>(options =>
 {
-    // تخفيف القيود لتناسب كلمة السر "sau"
-    options.Password.RequireDigit = false;
-    options.Password.RequireLowercase = false;
-    options.Password.RequireUppercase = false;
-    options.Password.RequireNonAlphanumeric = false;
-    options.Password.RequiredLength = 3;
+    // تخفيف القيود لتناسب كلمة السر البسيطة
+    options.Password.RequireDigit = false;           // لا يشترط أرقام
+    options.Password.RequireLowercase = false;       // لا يشترط حروف صغيرة
+    options.Password.RequireUppercase = false;       // لا يشترط حروف كبيرة
+    options.Password.RequireNonAlphanumeric = false; // لا يشترط رموز (!@#)
+    options.Password.RequiredLength = 3;             // الطول المسموح 3 أحرف (لأجل sau)
 
-    // عدم طلب تأكيد الإيميل للدخول
-    options.SignIn.RequireConfirmedAccount = false;
+    // إعدادات الدخول
+    options.SignIn.RequireConfirmedAccount = false;  // لا يطلب تأكيد الإيميل
 })
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders();
@@ -30,26 +30,27 @@ builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
-// 3. تشغيل زارع البيانات (Seeder) لإنشاء الأدمن (هذا الجزء المضاف) 🚨
+// 3. تشغيل زارع البيانات (Seeder) لإنشاء الأدمن تلقائياً 🚨
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     try
     {
-        // استدعاء الكلاس الذي أنشأناه لإنشاء الأدمن
-        await SporSalon_1.Data.DbSeeder.SeedRolesAndAdminAsync(services);
+        // استدعاء دالة الـ Seeding التي كتبناها في DbSeeder.cs
+        await DbSeeder.SeedRolesAndAdminAsync(services);
     }
     catch (Exception ex)
     {
         var logger = services.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "An error occurred while seeding the database.");
+        logger.LogError(ex, "Veritabanı oluşturulurken bir hata oluştu (Seeding Error).");
     }
 }
 
-// إعدادات الـ Pipeline
+// إعدادات الـ Pipeline (Request Pipeline)
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
+    // القيمة الافتراضية لـ HSTS هي 30 يوماً
     app.UseHsts();
 }
 
@@ -58,7 +59,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-// تفعيل نظام الأمان
+// تفعيل نظام الأمان (Authentication & Authorization)
 app.UseAuthentication();
 app.UseAuthorization();
 

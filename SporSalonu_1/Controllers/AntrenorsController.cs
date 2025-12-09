@@ -30,7 +30,8 @@ namespace SporSalonu_1.Controllers
         // GET: Antrenors
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Antrenorler.Include(a => a.SporSalonu);
+            var applicationDbContext = _context.Antrenorler.Include
+                (a => a.SporSalonu);
             return View(await applicationDbContext.ToListAsync());
         }
 
