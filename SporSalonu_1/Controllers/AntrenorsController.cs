@@ -185,26 +185,29 @@ namespace SporSalonu_1.Controllers
         }
 
         // POST: Antrenors/Delete/5
+        // POST: Antrenors/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var antrenor = await _context.Antrenorler.FindAsync(id);
+            // 1. جلب المدرب مع المواعيد (Randevular) المرتبطة به
+            var antrenor = await _context.Antrenorler
+                .Include(a => a.Randevular) // 🚨 ضروري جداً لجلب المواعيد
+                .FirstOrDefaultAsync(m => m.Id == id);
+
             if (antrenor != null)
             {
-                // حذف الصورة من السيرفر عند حذف المدرب
-                if (!string.IsNullOrEmpty(antrenor.ResimUrl))
+                // 2. إذا كان لدى المدرب مواعيد، قم بحذفها أولاً
+                if (antrenor.Randevular != null && antrenor.Randevular.Any())
                 {
-                    string imagePath = Path.Combine(_hostEnvironment.WebRootPath, antrenor.ResimUrl.TrimStart('/'));
-                    if (System.IO.File.Exists(imagePath))
-                    {
-                        System.IO.File.Delete(imagePath);
-                    }
+                    _context.Randevular.RemoveRange(antrenor.Randevular);
                 }
 
+                // 3. الآن احذف المدرب بأمان
                 _context.Antrenorler.Remove(antrenor);
                 await _context.SaveChangesAsync();
             }
+
             return RedirectToAction(nameof(Index));
         }
 

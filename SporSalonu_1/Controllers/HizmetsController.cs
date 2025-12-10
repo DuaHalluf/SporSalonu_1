@@ -7,12 +7,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using SporSalon_1.Data;
 using SporSalon_1.Models;
-using Microsoft.AspNetCore.Authorization; // 1. 🚨 Added Authorization Namespace
+using Microsoft.AspNetCore.Authorization;
 
 namespace SporSalonu_1.Controllers
 {
-    // 2. 🚨 Protected Controller: Only Admin can manage Services
-    [Authorize(Roles = "Admin")]
+    // 🚨 أزلنا القيد العام عن الكلاس لكي يستطيع الأعضاء رؤية صفحة العرض
     public class HizmetsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -23,6 +22,7 @@ namespace SporSalonu_1.Controllers
         }
 
         // GET: Hizmets
+        // ✅ هذه الصفحة متاحة للجميع (ليرى الأعضاء الخدمات)
         public async Task<IActionResult> Index()
         {
             var applicationDbContext = _context.Hizmetler.Include(h => h.SporSalonu);
@@ -30,6 +30,7 @@ namespace SporSalonu_1.Controllers
         }
 
         // GET: Hizmets/Details/5
+        // ✅ هذه الصفحة متاحة للجميع (ليرى الأعضاء تفاصيل الخدمة قبل الحجز)
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -48,7 +49,10 @@ namespace SporSalonu_1.Controllers
             return View(hizmet);
         }
 
+        // 🔒 --- منطقة الأدمن (Create, Edit, Delete) --- 🔒
+
         // GET: Hizmets/Create
+        [Authorize(Roles = "Admin")] // 🚫 للأدمن فقط
         public IActionResult Create()
         {
             ViewData["SporSalonuId"] = new SelectList(_context.SporSalonlari, "Id", "Ad");
@@ -58,6 +62,7 @@ namespace SporSalonu_1.Controllers
         // POST: Hizmets/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")] // 🚫 للأدمن فقط
         public async Task<IActionResult> Create([Bind("Id,Ad,Aciklama,Sure,Ucret,SporSalonuId")] Hizmet hizmet)
         {
             // Remove navigation property validation error if it exists
@@ -74,6 +79,7 @@ namespace SporSalonu_1.Controllers
         }
 
         // GET: Hizmets/Edit/5
+        [Authorize(Roles = "Admin")] // 🚫 للأدمن فقط
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -93,6 +99,7 @@ namespace SporSalonu_1.Controllers
         // POST: Hizmets/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")] // 🚫 للأدمن فقط
         public async Task<IActionResult> Edit(int id, [Bind("Id,Ad,Aciklama,Sure,Ucret,SporSalonuId")] Hizmet hizmet)
         {
             if (id != hizmet.Id)
@@ -128,6 +135,7 @@ namespace SporSalonu_1.Controllers
         }
 
         // GET: Hizmets/Delete/5
+        [Authorize(Roles = "Admin")] // 🚫 للأدمن فقط
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -147,17 +155,30 @@ namespace SporSalonu_1.Controllers
         }
 
         // POST: Hizmets/Delete/5
+        // POST: Hizmets/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")] // تأكد من وجود هذا السطر إذا كنت تريد حمايتها
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var hizmet = await _context.Hizmetler.FindAsync(id);
+            // 1. جلب الخدمة مع المواعيد المرتبطة بها
+            var hizmet = await _context.Hizmetler
+                .Include(h => h.Randevular) // 🚨 ضروري جداً: استدعاء جدول المواعيد
+                .FirstOrDefaultAsync(m => m.Id == id);
+
             if (hizmet != null)
             {
+                // 2. إذا كانت هناك مواعيد لهذه الخدمة، نحذفها أولاً
+                if (hizmet.Randevular != null && hizmet.Randevular.Any())
+                {
+                    _context.Randevular.RemoveRange(hizmet.Randevular);
+                }
+
+                // 3. الآن نحذف الخدمة بأمان
                 _context.Hizmetler.Remove(hizmet);
+                await _context.SaveChangesAsync();
             }
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 

@@ -1,0 +1,14 @@
+﻿@{
+    ViewData["Title"] = "تم رفض الوصول";
+}
+
+<div class="container mt-5 text-center">
+    <div class="alert alert-danger" role="alert">
+        <h1 class="display-4 text-danger">⛔ رفض الوصول</h1>
+        <hr>
+        <p class="lead">عذراً، ليس لديك الصلاحيات الكافية لعرض هذه الصفحة.</p>
+        <p>يرجى التواصل مع مسؤول النظام إذا كنت تعتقد أن هذا خطأ.</p>
+    </div>
+
+    <a asp-controller="Home" asp-action="Index" class="btn btn-primary">العودة للصفحة الرئيسية</a>
+</div>

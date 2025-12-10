@@ -92,18 +92,17 @@
         <div class="mt-4">
             @if (User.Identity.IsAuthenticated)
             {
-                // للعضو المسجل: زر حجز موعد وزر المساعد الذكي
-                <a asp-controller="Randevus" asp-action="Create" class="btn btn-success btn-lg px-4 py-3 fw-bold me-2">
-                    <i class="fa fa-calendar-check"></i> Hemen Randevu Al
+                <a href="/Randevus/Create" class="btn btn-success btn-lg px-4 py-3 fw-bold rounded-pill shadow hover-scale">
+                    <i class="bi bi-calendar-check me-2"></i> Hemen Randevu Al
                 </a>
-                <a asp-controller="YapayZeka" asp-action="Index" class="btn btn-info btn-lg px-4 py-3 fw-bold text-white">
+
+                <a asp-controller="YapayZeka" asp-action="Index" class="btn btn-info btn-lg px-4 py-3 fw-bold text-white rounded-pill shadow hover-scale ms-2">
                     <i class="fa fa-robot"></i> AI Asistan'ı Dene
                 </a>
             }
             else
             {
-                // لغير المسجل: زر التسجيل
-                <a asp-controller="Account" asp-action="Register" class="btn btn-primary btn-lg px-5 py-3 fw-bold">
+                <a asp-controller="Account" asp-action="Register" class="btn btn-primary btn-lg px-5 py-3 fw-bold rounded-pill shadow">
                     <i class="fa fa-user-plus"></i> Aramıza Katıl (Üye Ol)
                 </a>
             }
@@ -171,7 +170,10 @@
                     <span class="fs-5">Temiz, ferah ve hijyenik ortam</span>
                 </li>
             </ul>
-            <a asp-controller="Hizmets" asp-action="Index" class="btn btn-outline-primary btn-lg mt-3 px-4">Hizmetlerimizi İncele</a>
+
+            <a href="/Hizmets/Index" class="btn btn-outline-primary btn-lg mt-3 rounded-pill">
+                Hizmetlerimizi İncele
+            </a>
         </div>
     </div>
 </div>
@@ -183,5 +185,14 @@
 
         .hover-effect:hover {
             transform: translateY(-10px);
+        }
+
+    .hover-scale {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .hover-scale:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 1rem 3rem rgba(0,0,0,.175) !important;
         }
 </style>

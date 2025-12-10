@@ -1,15 +1,19 @@
 ﻿@model IEnumerable<SporSalon_1.Models.Hizmet>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Hizmetler";
 }
 
-<h1>Index</h1>
+<h1>Hizmetler Listesi</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
+@if (User.IsInRole("Admin"))
+{
+    <p>
+        <a asp-action="Create" class="btn btn-primary">Yeni Hizmet Ekle</a>
+    </p>
+}
+
+<table class="table table-hover">
     <thead>
         <tr>
             <th>
@@ -27,33 +31,38 @@
             <th>
                 @Html.DisplayNameFor(model => model.SporSalonu)
             </th>
-            <th></th>
+            <th>İşlemler</th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Ad)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Aciklama)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Sure)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Ucret)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.SporSalonu.Ad)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Ad)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Aciklama)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Sure)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Ucret) TL
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SporSalonu.Ad)
+                </td>
+                <td>
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Düzenle</a>
+                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Sil</a>
+                    }
+
+                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info">Detaylar</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

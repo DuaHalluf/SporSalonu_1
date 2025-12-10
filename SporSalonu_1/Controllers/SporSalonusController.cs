@@ -134,17 +134,54 @@ namespace SporSalonu_1.Controllers
         }
 
         // POST: SporSalonus/Delete/5
+        // POST: SporSalonus/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var sporSalonu = await _context.SporSalonlari.FindAsync(id);
+            // 1. جلب الصالة مع كل تفاصيلها (المدربين، الخدمات، والمواعيد المرتبطة بهم)
+            var sporSalonu = await _context.SporSalonlari
+                .Include(s => s.Antrenorler).ThenInclude(a => a.Randevular) // جلب المدربين ومواعيدهم
+                .Include(s => s.Hizmetler).ThenInclude(h => h.Randevular)   // جلب الخدمات ومواعيدها
+                .FirstOrDefaultAsync(m => m.Id == id);
+
             if (sporSalonu != null)
             {
+                // 2. تنظيف المواعيد المرتبطة بمدربين هذه الصالة
+                if (sporSalonu.Antrenorler != null)
+                {
+                    foreach (var antrenor in sporSalonu.Antrenorler)
+                    {
+                        if (antrenor.Randevular != null && antrenor.Randevular.Any())
+                        {
+                            _context.Randevular.RemoveRange(antrenor.Randevular);
+                        }
+                    }
+                    // حذف المدربين
+                    _context.Antrenorler.RemoveRange(sporSalonu.Antrenorler);
+                }
+
+                // 3. تنظيف المواعيد المرتبطة بخدمات هذه الصالة
+                if (sporSalonu.Hizmetler != null)
+                {
+                    foreach (var hizmet in sporSalonu.Hizmetler)
+                    {
+                        if (hizmet.Randevular != null && hizmet.Randevular.Any())
+                        {
+                            // قد تكون حذفت في الخطوة السابقة إذا كانت مشتركة، لكن للتأكيد
+                            _context.Randevular.RemoveRange(hizmet.Randevular);
+                        }
+                    }
+                    // حذف الخدمات
+                    _context.Hizmetler.RemoveRange(sporSalonu.Hizmetler);
+                }
+
+                // 4. الآن الصالة فارغة تماماً، يمكننا حذفها بأمان
                 _context.SporSalonlari.Remove(sporSalonu);
+
+                await _context.SaveChangesAsync();
             }
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 

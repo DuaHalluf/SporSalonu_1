@@ -1,48 +1,54 @@
 ﻿@model SporSalon_1.Models.Hizmet
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Hizmet Detayı";
 }
 
-<h1>Details</h1>
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h3 class="card-title mb-0">@Model.Ad</h3>
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">
+                    @Html.DisplayNameFor(model => model.Aciklama)
+                </dt>
+                <dd class="col-sm-9">
+                    @Html.DisplayFor(model => model.Aciklama)
+                </dd>
 
-<div>
-    <h4>Hizmet</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Ad)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Ad)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Aciklama)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Aciklama)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Sure)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Sure)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Ucret)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Ucret)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.SporSalonu)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.SporSalonu.Ad)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+                <dt class="col-sm-3">
+                    @Html.DisplayNameFor(model => model.Sure)
+                </dt>
+                <dd class="col-sm-9">
+                    @Html.DisplayFor(model => model.Sure)
+                </dd>
+
+                <dt class="col-sm-3">
+                    @Html.DisplayNameFor(model => model.Ucret)
+                </dt>
+                <dd class="col-sm-9">
+                    <span class="badge bg-success" style="font-size: 1rem;">
+                        @Html.DisplayFor(model => model.Ucret) TL
+                    </span>
+                </dd>
+
+                <dt class="col-sm-3">
+                    @Html.DisplayNameFor(model => model.SporSalonu)
+                </dt>
+                <dd class="col-sm-9">
+                    @Html.DisplayFor(model => model.SporSalonu.Ad)
+                </dd>
+            </dl>
+        </div>
+        <div class="card-footer text-muted">
+            @if (User.IsInRole("Admin"))
+            {
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Düzenle</a>
+            }
+
+            <a asp-action="Index" class="btn btn-secondary">Listeye Dön</a>
+        </div>
+    </div>
 </div>
