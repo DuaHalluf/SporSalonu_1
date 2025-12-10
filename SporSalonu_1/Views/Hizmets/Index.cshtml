@@ -4,65 +4,55 @@
     ViewData["Title"] = "Hizmetler";
 }
 
-<h1>Hizmetler Listesi</h1>
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Hizmetler Listesi</h1>
 
-@if (User.IsInRole("Admin"))
-{
-    <p>
-        <a asp-action="Create" class="btn btn-primary">Yeni Hizmet Ekle</a>
-    </p>
-}
-
-<table class="table table-hover">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Ad)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Aciklama)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Sure)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Ucret)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.SporSalonu)
-            </th>
-            <th>İşlemler</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
+        @if (User.IsInRole("Admin"))
         {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Ad)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Aciklama)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Sure)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Ucret) TL
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.SporSalonu.Ad)
-                </td>
-                <td>
-                    @if (User.IsInRole("Admin"))
-                    {
-                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Düzenle</a>
-                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Sil</a>
-                    }
-
-                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info">Detaylar</a>
-                </td>
-            </tr>
+            <a asp-action="Create" class="btn btn-primary">
+                <i class="bi bi-plus-lg"></i> Yeni Hizmet Ekle
+            </a>
         }
-    </tbody>
-</table>
+    </div>
+
+    <table class="table table-hover shadow-sm bg-white rounded">
+        <thead class="table-light">
+            <tr>
+                <th>@Html.DisplayNameFor(model => model.Ad)</th>
+                <th>@Html.DisplayNameFor(model => model.Aciklama)</th>
+                <th>@Html.DisplayNameFor(model => model.Sure) (Dk)</th>
+                <th>@Html.DisplayNameFor(model => model.Ucret)</th>
+                <th>@Html.DisplayNameFor(model => model.SporSalonu)</th>
+                <th class="text-center">İşlemler</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td class="fw-bold">@Html.DisplayFor(modelItem => item.Ad)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Aciklama)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Sure)</td>
+                    <td><span class="badge bg-success">@Html.DisplayFor(modelItem => item.Ucret) TL</span></td>
+                    <td>@Html.DisplayFor(modelItem => item.SporSalonu.Ad)</td>
+
+                    <td class="text-center">
+
+                        <a asp-controller="Randevus" asp-action="Create" class="btn btn-sm btn-success text-white me-1">
+                            <i class="bi bi-calendar-check"></i> Randevu Al
+                        </a>
+
+                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info text-white me-1">Detaylar</a>
+
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning me-1">Düzenle</a>
+                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Sil</a>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

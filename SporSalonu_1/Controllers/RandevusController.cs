@@ -91,6 +91,12 @@ namespace SporSalon_1.Controllers
                     .ToListAsync());
             }
         }
+        // 1. أضف هذه الدالة الجديدة لصفحة النجاح
+        public IActionResult Success()
+        {
+            return View();
+        }
+
 
         // 2. صفحة الحجز الجديدة - GET
         public IActionResult Create()
@@ -106,26 +112,26 @@ namespace SporSalon_1.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Randevu randevu)
         {
+            // 1. ربط المستخدم الحالي
             var user = await _userManager.GetUserAsync(User);
             randevu.UyeId = user.Id;
 
+            // 2. جلب البيانات للتحقق
             var secilenAntrenor = await _context.Antrenorler.FindAsync(randevu.AntrenorId);
             var secilenHizmet = await _context.Hizmetler.FindAsync(randevu.HizmetId);
 
+            // --- التحقق من التخصص (كما هو) ---
             if (secilenAntrenor != null && secilenHizmet != null)
             {
                 string uzmanlik = secilenAntrenor.UzmanlikAlani.Trim();
                 string hizmetAd = secilenHizmet.Ad.Trim();
                 var turkishCulture = new CultureInfo("tr-TR");
 
-                // 1. التحقق من المدرب المختار
                 bool isExpert = turkishCulture.CompareInfo.IndexOf(uzmanlik, hizmetAd, CompareOptions.IgnoreCase) >= 0;
 
                 if (!isExpert)
                 {
-                    // 2. البحث عن البدلاء (التصحيح هنا) ✅
                     var tumAntrenorler = await _context.Antrenorler.ToListAsync();
-
                     var uzmanAntrenorler = tumAntrenorler
                         .Where(a => !string.IsNullOrEmpty(a.UzmanlikAlani) &&
                                     turkishCulture.CompareInfo.IndexOf(a.UzmanlikAlani, hizmetAd, CompareOptions.IgnoreCase) >= 0)
@@ -140,7 +146,7 @@ namespace SporSalon_1.Controllers
                     }
                     else
                     {
-                        TempData["Hata"] = $"Hata: Seçilen antrenör ({secilenAntrenor.AdSoyad}) bu hizmette uzman değil. (Sistemde uygun uzman bulunamadı)";
+                        TempData["Hata"] = $"Hata: Seçilen antrenör ({secilenAntrenor.AdSoyad}) bu hizmette uzman değil.";
                     }
 
                     ViewData["AntrenorId"] = new SelectList(_context.Antrenorler, "Id", "AdSoyad", randevu.AntrenorId);
@@ -149,7 +155,7 @@ namespace SporSalon_1.Controllers
                 }
             }
 
-            // التحقق من الوقت والحفظ (كما هو) ...
+            // --- التحقق من تعارض الوقت (كما هو) ---
             bool isBusy = _context.Randevular.Any(x =>
                 x.AntrenorId == randevu.AntrenorId &&
                 x.Tarih.Date == randevu.Tarih.Date &&
@@ -163,14 +169,22 @@ namespace SporSalon_1.Controllers
                 return View(randevu);
             }
 
+            // 🚨🚨 الإصلاح هنا: إزالة القيود عن الحقول المرتبطة (Navigation Properties) 🚨🚨
+            ModelState.Remove("Antrenor");
+            ModelState.Remove("Hizmet");
+            ModelState.Remove("Uye");
+
+            // --- الحفظ النهائي ---
             if (ModelState.IsValid)
             {
                 _context.Add(randevu);
                 await _context.SaveChangesAsync();
-                TempData["Basari"] = "Randevu başarıyla oluşturuldu.";
-                return RedirectToAction(nameof(Index));
+
+                // التوجيه لصفحة النجاح
+                return RedirectToAction(nameof(Success));
             }
 
+            // في حال فشل الـ Model Validation لأسباب أخرى (مثل التاريخ فارغ)
             ViewData["AntrenorId"] = new SelectList(_context.Antrenorler, "Id", "AdSoyad", randevu.AntrenorId);
             ViewData["HizmetId"] = new SelectList(_context.Hizmetler, "Id", "Ad", randevu.HizmetId);
             return View(randevu);
