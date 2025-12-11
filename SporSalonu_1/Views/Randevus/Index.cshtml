@@ -4,59 +4,120 @@
     ViewData["Title"] = "Randevular";
 }
 
-<h1>@(User.IsInRole("Admin") ? "Tüm Randevular (Yönetici)" : "Randevularım")</h1>
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+        <div>
+            <h2 class="text-primary fw-bold">
+                <i class="bi bi-calendar-check me-2"></i>
+                @(User.IsInRole("Admin") ? "Tüm Randevular (Yönetici Paneli)" : "Randevularım")
+            </h2>
+            <p class="text-muted mb-0">Antrenman programınızı ve yaklaşan randevularınızı buradan takip edebilirsiniz.</p>
+        </div>
+        <a asp-action="Create" class="btn btn-success rounded-pill shadow px-4">
+            <i class="bi bi-plus-lg me-1"></i> Yeni Randevu Al
+        </a>
+    </div>
 
-<p>
-    <a asp-action="Create" class="btn btn-primary">Yeni Randevu Al</a>
-</p>
-
-<table class="table table-hover">
-    <thead>
-        <tr>
-            @if (User.IsInRole("Admin"))
-            {
-                <th>Üye (Müşteri)</th>
-            }
-            <th>
-                @Html.DisplayNameFor(model => model.Tarih)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Hizmet)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Antrenor)
-            </th>
-            <th>İşlemler</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
+    <div class="row">
+        @if (!Model.Any())
         {
-            <tr>
-                @if (User.IsInRole("Admin"))
-                {
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Uye.UserName)
-                    </td>
-                }
-                <td>
-                    @item.Tarih.ToString("dd/MM/yyyy HH:mm")
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Hizmet.Ad)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Antrenor.AdSoyad)
-                </td>
-                <td>
-                    @if (User.IsInRole("Admin"))
-                    {
-                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Düzenle</a>
-                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Sil</a>
-                    }
-                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info">Detaylar</a>
-                </td>
-            </tr>
+            <div class="col-12 text-center text-muted">
+                <div class="p-5 bg-light rounded-3 shadow-sm border border-dashed">
+                    <i class="bi bi-calendar-x fs-1 text-secondary mb-3"></i>
+                    <h4>Henüz hiç randevu bulunmamaktadır.</h4>
+                    <p>Antrenman programınıza uygun bir randevu almak için yukarıdaki butonu kullanın.</p>
+                </div>
+            </div>
         }
-    </tbody>
-</table>
+        else
+        {
+            @foreach (var item in Model)
+            {
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 border-0 shadow-sm hover-card">
+
+                        <div class="card-header bg-white border-bottom-0 d-flex justify-content-between align-items-start pt-3">
+                            <span class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill">
+                                <i class="bi bi-check-circle-fill me-1"></i> Aktif
+                            </span>
+
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <div class="text-end">
+                                    <small class="text-muted d-block" style="font-size: 0.75rem;">MÜŞTERİ</small>
+                                    <span class="fw-bold text-dark">@item.Uye?.UserName</span>
+                                </div>
+                            }
+                        </div>
+
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-4">
+                                <div class="bg-light rounded-circle d-flex justify-content-center align-items-center me-3 shadow-sm" style="width: 60px; height: 60px;">
+                                    <i class="bi bi-person-fill fs-2 text-secondary"></i>
+                                </div>
+                                <div>
+                                    <h5 class="card-title fw-bold mb-0">@item.Antrenor?.AdSoyad</h5>
+
+                                    <div class="text-muted small mt-1">
+                                        <i class="bi bi-geo-alt-fill text-danger me-1"></i>
+                                        <strong>@(item.Antrenor?.SporSalonu?.Ad ?? "Merkez Şube")</strong>
+                                    </div>
+
+                                    <span class="badge bg-info text-dark mt-1">@item.Hizmet?.Ad</span>
+                                </div>
+                            </div>
+
+                            <hr class="text-muted opacity-25" />
+
+                            <div class="row text-center">
+                                <div class="col-6 border-end">
+                                    <small class="text-muted text-uppercase fw-bold" style="font-size: 0.7rem;">Tarih</small><br />
+                                    <span class="fs-5 fw-bold text-dark">@item.Tarih.ToString("dd.MM.yyyy")</span>
+                                </div>
+                                <div class="col-6">
+                                    <small class="text-muted text-uppercase fw-bold" style="font-size: 0.7rem;">Saat</small><br />
+                                    <span class="fs-5 fw-bold text-dark">@item.Saat</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-footer bg-light border-top-0 p-3">
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-between">
+                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-primary btn-sm flex-fill rounded-pill">
+                                    <i class="bi bi-info-circle me-1"></i> Detay
+                                </a>
+
+                                @if (User.IsInRole("Admin"))
+                                {
+                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-warning btn-sm flex-fill rounded-pill">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+                                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-outline-danger btn-sm flex-fill rounded-pill">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                }
+                                else
+                                {
+                                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-outline-danger btn-sm flex-fill rounded-pill">
+                                        <i class="bi bi-x-circle me-1"></i> İptal Et
+                                    </a>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>
+
+<style>
+    .hover-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .hover-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+        }
+</style>

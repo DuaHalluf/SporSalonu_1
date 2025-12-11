@@ -1,42 +1,171 @@
 ﻿@model SporSalon_1.Models.SporSalonu
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Salon Detayları";
 }
 
-<h1>Details</h1>
+<div class="container mt-5 mb-5">
 
-<div>
-    <h4>SporSalonu</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Ad)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Ad)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Adres)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Adres)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CalismaSaatleri)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CalismaSaatleri)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Telefon)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Telefon)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+    <a asp-action="Index" class="btn btn-outline-secondary rounded-pill mb-4 px-3">
+        <i class="fas fa-arrow-left me-2"></i> Listeye Dön
+    </a>
+
+    <div class="card shadow-lg border-0 overflow-hidden rounded-3">
+
+        <div class="position-relative" style="height: 350px;">
+            <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=1200&q=80"
+                 class="w-100 h-100"
+                 style="object-fit: cover; filter: brightness(0.7);"
+                 alt="Gym Cover">
+
+            <div class="position-absolute bottom-0 start-0 p-4 w-100 text-white"
+                 style="background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);">
+                <h1 class="display-4 fw-bold mb-0">@Model.Ad</h1>
+                <p class="lead mb-0"><i class="fas fa-map-marker-alt text-warning me-2"></i> @Model.Adres</p>
+            </div>
+
+            <div class="position-absolute top-0 end-0 m-4">
+                <span class="badge bg-success fs-6 shadow px-3 py-2">
+                    <i class="fas fa-check-circle me-1"></i> Hizmete Açık
+                </span>
+            </div>
+        </div>
+
+        <div class="card-body p-5">
+            <div class="row">
+
+                <div class="col-md-7">
+                    <h4 class="text-primary fw-bold mb-4 border-bottom pb-2">Salon Bilgileri</h4>
+
+                    <div class="mb-4 d-flex align-items-center">
+                        <div class="bg-light p-3 rounded-circle me-3 text-primary">
+                            <i class="fas fa-clock fa-2x"></i>
+                        </div>
+                        <div>
+                            <h6 class="text-muted mb-0">Çalışma Saatleri</h6>
+                            <h4 class="fw-bold text-dark">@Model.CalismaSaatleri</h4>
+                        </div>
+                    </div>
+
+                    <div class="mb-4 d-flex align-items-center">
+                        <div class="bg-light p-3 rounded-circle me-3 text-success">
+                            <i class="fas fa-phone fa-2x"></i>
+                        </div>
+                        <div>
+                            <h6 class="text-muted mb-0">İletişim Numarası</h6>
+                            <h4 class="fw-bold text-dark">@Model.Telefon</h4>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <h5 class="fw-bold mb-3"><i class="fas fa-star text-warning me-2"></i> Sunulan İmkanlar</h5>
+                        <div class="d-flex gap-3 flex-wrap">
+                            <span class="badge bg-secondary p-2"><i class="fas fa-wifi me-1"></i> Ücretsiz WiFi</span>
+                            <span class="badge bg-secondary p-2"><i class="fas fa-shower me-1"></i> Duş Alanları</span>
+                            <span class="badge bg-secondary p-2"><i class="fas fa-parking me-1"></i> Otopark</span>
+                            <span class="badge bg-secondary p-2"><i class="fas fa-music me-1"></i> Müzik Sistemi</span>
+                            <span class="badge bg-secondary p-2"><i class="fas fa-box me-1"></i> Kilitli Dolap</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-5 border-start ps-md-5 mt-4 mt-md-0">
+
+                    <div class="card bg-light border-0 p-4 mb-4">
+                        <h5 class="fw-bold mb-3">Hızlı İşlemler</h5>
+
+                        <a href="tel:@Model.Telefon" class="btn btn-success w-100 mb-2 py-2">
+                            <i class="fas fa-phone-alt me-2"></i> Hemen Ara
+                        </a>
+
+                        <a href="https://maps.google.com/?q=@Model.Adres" target="_blank" class="btn btn-primary w-100 mb-2 py-2">
+                            <i class="fas fa-map-marked-alt me-2"></i> Haritada Göster
+                        </a>
+                    </div>
+
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <div class="card border-warning p-3">
+                            <h6 class="text-warning fw-bold mb-2"><i class="fas fa-user-shield me-2"></i> Yönetici Paneli</h6>
+                            <div class="d-flex gap-2">
+                                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-warning flex-fill">
+                                    <i class="fas fa-edit"></i> Düzenle
+                                </a>
+                                <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-outline-danger flex-fill">
+                                    <i class="fas fa-trash"></i> Sil
+                                </a>
+                            </div>
+                        </div>
+                    }
+
+                </div>
+            </div>
+
+           
+
+                <div class="row">
+                    <div class="col-12 mb-4">
+                        <h3 class="text-primary fw-bold">
+                            <i class="fas fa-dumbbell me-2"></i> Bu Salonda Sunulan Hizmetler
+                        </h3>
+                        <p class="text-muted">Hedefinize uygun antrenman programını seçin ve hemen başlayın.</p>
+                    </div>
+
+                    @if (ViewBag.TumHizmetler != null)
+                    {
+                        @foreach (var hizmet in ViewBag.TumHizmetler as List<SporSalon_1.Models.Hizmet>)
+                        {
+                            <div class="col-md-4 mb-4">
+                                <div class="card border-0 shadow-sm h-100 hover-card">
+                                    <div class="card-body p-4 position-relative">
+
+                                        <div class="d-flex justify-content-between align-items-start mb-3">
+                                            <div class="bg-primary bg-opacity-10 p-3 rounded-circle text-primary">
+                                                <i class="fas fa-running fa-2x"></i>
+                                            </div>
+                                            <span class="badge bg-success rounded-pill px-3 py-2">
+                                                @hizmet.Ucret TL
+                                            </span>
+                                        </div>
+
+                                        <h4 class="fw-bold mb-2">@hizmet.Ad</h4>
+                                        <p class="text-muted small mb-3" style="min-height: 40px;">
+                                            @(hizmet.Aciklama ?? "Bu hizmet için profesyonel destek alabilirsiniz.")
+                                        </p>
+
+                                        <div class="d-flex align-items-center text-muted small mb-4">
+                                            <i class="far fa-clock me-2"></i>
+                                            <span>Ortalama @hizmet.Sure dk</span>
+                                        </div>
+
+                                    <a asp-controller="Randevus"
+                                       asp-action="Create"
+                                       asp-route-hizmetId="@hizmet.Id"
+                                       asp-route-sporSalonuId="@Model.Id"
+                                       class="btn btn-outline-primary w-100 rounded-pill stretched-link">
+                                        Randevu Al <i class="fas fa-chevron-right ms-1"></i>
+                                    </a>
+
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="col-12">
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i> Şu anda listelenecek hizmet bulunmuyor.
+                            </div>
+                        </div>
+                    }
+                </div>
+<style>
+    .hover-card {
+        transition: transform 0.3s ease;
+    }
+
+        .hover-card:hover {
+            transform: translateY(-5px);
+        }
+</style>

@@ -19,6 +19,8 @@
             <form asp-action="Create">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
+                <input type="hidden" id="HiddenSporSalonuId" value="@(ViewBag.FilterSporSalonuId ?? 0)" />
+
                 <div class="form-group mb-3">
                     <label asp-for="Tarih" class="control-label fw-bold">Tarih</label>
                     <input asp-for="Tarih" class="form-control" type="date" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
@@ -83,9 +85,12 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        // دالة موحدة لجلب المدربين لكي نستخدمها في الحالتين
+        // دالة لجلب المدربين
         function loadAntrenorler(hizmetId) {
             var antrenorList = $("#AntrenorList");
+
+            // 🔴 قراءة رقم الصالة من الحقل المخفي (القيمة مضمونة أن تكون رقم أو 0)
+            var salonId = $("#HiddenSporSalonuId").val();
 
             // إعادة تعيين القائمة
             antrenorList.empty();
@@ -94,20 +99,29 @@
 
             if (hizmetId) {
                 $.ajax({
-                    url: '/Randevus/GetAntrenorlerByHizmet', // تأكد أن الاسم يطابق الكنترولر الجمع
+                    url: '/Randevus/GetAntrenorlerByHizmet',
                     type: 'GET',
-                    data: { hizmetId: hizmetId },
+                    // إرسال رقم الخدمة + رقم الصالة للسيرفر
+                    data: {
+                        hizmetId: hizmetId,
+                        // نستخدم القيمة التي قرأناها مباشرة
+                        sporSalonuId: salonId
+                    },
                     success: function (data) {
-                        antrenorList.empty(); // مسح "جاري التحميل"
+                        antrenorList.empty();
 
                         if (data.length > 0) {
                             antrenorList.append('<option value="">-- Antrenör Seçiniz --</option>');
                             $.each(data, function (i, item) {
                                 antrenorList.append($('<option></option>').val(item.id).html(item.ad));
                             });
-                            antrenorList.prop("disabled", false); // تفعيل القائمة
+                            antrenorList.prop("disabled", false);
                         } else {
-                            antrenorList.append('<option value="">-- Bu hizmet için uzman bulunamadı --</option>');
+                            if(salonId > 0) {
+                                antrenorList.append('<option value="">-- Bu salonda bu hizmet için uzman bulunamadı --</option>');
+                            } else {
+                                antrenorList.append('<option value="">-- Bu hizmet için uzman bulunamadı --</option>');
+                            }
                         }
                     },
                     error: function () {
@@ -123,17 +137,16 @@
         }
 
         $(document).ready(function () {
-            // السيناريو 1: المستخدم يختار من القائمة المنسدلة (الحجز العادي)
+            // السيناريو 1: المستخدم يختار من القائمة المنسدلة (يرسل الـ ID الجديد)
             $("#HizmetList").change(function () {
                 var selectedId = $(this).val();
                 loadAntrenorler(selectedId);
             });
 
-            // السيناريو 2: الصفحة فتحت والخدمة محددة مسبقاً (الحجز الموجه)
-            // نبحث عن الحقل المخفي الذي وضعناه في الـ IF
+            // 🔴 السيناريو 2: التحميل الأولي (إذا كانت الخدمة محددة مسبقاً)
+            // نستخدم هذا لضمان تحميل قائمة المدربين عند فتح الصفحة
             var preSelectedId = $("#HizmetIdHidden").val();
             if (preSelectedId) {
-                // استدعاء الدالة فوراً عند تحميل الصفحة
                 loadAntrenorler(preSelectedId);
             }
         });

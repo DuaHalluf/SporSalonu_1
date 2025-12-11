@@ -34,20 +34,20 @@ namespace SporSalonu_1.Controllers
         // =========================================================
         // ✅ السماح للجميع برؤية التفاصيل
         // =========================================================
+        // GET: SporSalonus/Details/5
+        // GET: SporSalonus/Details/5
         [AllowAnonymous]
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var sporSalonu = await _context.SporSalonlari
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (sporSalonu == null)
-            {
-                return NotFound();
-            }
+
+            if (sporSalonu == null) return NotFound();
+
+            // 👇 التعديل الجديد: جلب كل الخدمات المتاحة في النظام وإرسالها للصفحة
+            ViewBag.TumHizmetler = await _context.Hizmetler.ToListAsync();
 
             return View(sporSalonu);
         }

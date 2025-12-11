@@ -27,40 +27,53 @@ namespace SporSalon_1.Controllers
 
         // ==========================================================
         //  دالة AJAX لجلب المدربين حسب الخدمة (ديناميكية)
-        // ==========================================================
+
+        // 4. ترتيب القائمة
         [HttpGet]
-        public async Task<JsonResult> GetAntrenorlerByHizmet(int hizmetId)
+        public async Task<JsonResult> GetAntrenorlerByHizmet(int hizmetId, int? sporSalonuId) // sporSalonuId قد تكون null أو 0
         {
             var hizmet = await _context.Hizmetler.FindAsync(hizmetId);
+            if (hizmet == null) return Json(new List<object>());
 
-            if (hizmet == null)
-            {
-                return Json(new List<object>());
-            }
-
-            // تنظيف اسم الخدمة
             string searchKeyword = hizmet.Ad.Trim();
             var turkishCulture = new CultureInfo("tr-TR");
 
-            var tumAntrenorler = await _context.Antrenorler.ToListAsync();
+            // 1. نبدأ بجميع المدربين في النظام
+            var allAntrenorler = await _context.Antrenorler.ToListAsync();
 
-            var uygunAntrenorler = tumAntrenorler
+            // 2. 🚨 التصفية الأولى (الحاسمة): التخصص (Expertise Filter)
+            var uzmanAntrenorler = allAntrenorler
                 .Where(a => !string.IsNullOrEmpty(a.UzmanlikAlani))
                 .Where(a =>
-                    // مقارنة ذكية تتجاهل حالة الأحرف والرموز التركية
-                    turkishCulture.CompareInfo.IndexOf(a.UzmanlikAlani, searchKeyword, CompareOptions.IgnoreCase) >= 0
-                    ||
+                    turkishCulture.CompareInfo.IndexOf(a.UzmanlikAlani, searchKeyword, CompareOptions.IgnoreCase) >= 0 ||
                     a.UzmanlikAlani.ToLower().Contains(searchKeyword.ToLower())
-                 )
-                .Select(a => new {
-                    id = a.Id,
-                    ad = a.AdSoyad
-                })
-                .ToList();
+                 ).ToList();
 
-            return Json(uygunAntrenorler);
+            // 3. 🚨 التصفية الثانية: الصالة (Location Filter)
+            if (sporSalonuId.HasValue && sporSalonuId.Value > 0)
+            {
+                // إذا كان الحجز موجهاً من صالة معينة، نأخذ فقط المدربين المختصين الذين يعملون في هذه الصالة
+                uzmanAntrenorler = uzmanAntrenorler.Where(a => a.SporSalonuId == sporSalonuId.Value).ToList();
+            }
+            // إذا لم يكن هناك تحديد للصالة، فإننا نأخذ جميع المختصين من جميع الفروع (وهذا صحيح).
+
+            // 4. تجهيز القائمة النهائية للعرض
+            var sonucListesi = uzmanAntrenorler.Select(a => new
+            {
+                id = a.Id,
+                // الجميع الآن هم مختصون، لذا نعرضهم كخبراء
+                ad = a.AdSoyad + " (🌟 Uzman)"
+            }).ToList();
+
+            // 5. إذا كانت القائمة فارغة، نعيد قائمة فارغة للعرض (وهذا يعني: لا يوجد مدرب مختص في هذه الخدمة/الصالة)
+            if (sonucListesi.Count == 0 && sporSalonuId.HasValue && sporSalonuId.Value > 0)
+            {
+                // هنا نعرض رسالة مناسبة للمستخدم في الواجهة
+                return Json(new List<object> { new { id = 0, ad = "-- Bu salonda uzman bulunamadı --" } });
+            }
+
+            return Json(sonucListesi);
         }
-
         // ==========================================================
         // 1. صفحة عرض المواعيد (Index)
         // ==========================================================
@@ -68,6 +81,7 @@ namespace SporSalon_1.Controllers
         {
             var randevularQuery = _context.Randevular
                 .Include(r => r.Antrenor)
+                .ThenInclude(a => a.SporSalonu)
                 .Include(r => r.Hizmet)
                 .Include(r => r.Uye);
 
@@ -98,18 +112,36 @@ namespace SporSalon_1.Controllers
         // ==========================================================
         // 2. صفحة الحجز الجديدة - GET (تم التعديل هنا ✅)
         // ==========================================================
-        public IActionResult Create(int? hizmetId) // استقبال رقم الخدمة الاختياري
+        // GET: Randevus/Create
+        // نستقبل الخدمة (hizmetId) والمدرب (antrenorId) كخيارات
+        // GET: Randevus/Create
+        // GET: Randevus/Create
+        public IActionResult Create(int? hizmetId, int? antrenorId, int? sporSalonuId) // تم تعديلها لاستقبال sporSalonuId
         {
-            // 1. إذا جاء المستخدم من زر "Randevu Al" الخاص بخدمة معينة
+            // تخزين رقم الصالة ليرسله الجافاسكربت لاحقاً في الـ AJAX
+            ViewBag.FilterSporSalonuId = sporSalonuId ?? 0;
+
+            // 1. تحديد قائمة المدربين الأولية
+            IQueryable<Antrenor> antrenorQuery = _context.Antrenorler.AsQueryable();
+
+            // 🚨 الشرط الأهم: إذا كان الحجز موجهاً من صالة، صَفِّ قائمة المدربين الأولية
+            if (sporSalonuId.HasValue && sporSalonuId.Value > 0)
+            {
+                antrenorQuery = antrenorQuery.Where(a => a.SporSalonuId == sporSalonuId.Value);
+            }
+
+            // إرسال القائمة الأولية للصفحة
+            ViewData["AntrenorId"] = new SelectList(antrenorQuery.ToList(), "Id", "AdSoyad", antrenorId);
+
+
+            // 2. منطق الخدمات (كما هو)
             if (hizmetId.HasValue)
             {
                 var secilenHizmet = _context.Hizmetler.Find(hizmetId.Value);
                 if (secilenHizmet != null)
                 {
-                    // نرسل الخدمة المختارة للواجهة لقفل الحقل
                     ViewBag.PreSelectedHizmet = secilenHizmet;
-
-                    // تحديد القيمة في القائمة المنسدلة أيضاً (احتياط)
+                    // يجب تعيين القيمة المختارة للخدمة لتظهر في الحقل المخفي
                     ViewData["HizmetId"] = new SelectList(_context.Hizmetler, "Id", "Ad", hizmetId.Value);
                 }
                 else
@@ -119,14 +151,11 @@ namespace SporSalon_1.Controllers
             }
             else
             {
-                // الوضع الطبيعي: قائمة فارغة يختار منها المستخدم
                 ViewData["HizmetId"] = new SelectList(_context.Hizmetler, "Id", "Ad");
             }
 
-            ViewData["AntrenorId"] = new SelectList(_context.Antrenorler, "Id", "AdSoyad");
             return View();
         }
-
         // ==========================================================
         // 3. عملية الحفظ - POST
         // ==========================================================
