@@ -26,8 +26,8 @@ namespace SporSalon_1.Controllers
         }
 
         // ==========================================================
-        //  دالة AJAX الجديدة (هنا التغيير المهم)
-        // دالة AJAX لجلب المدربين حسب الخدمة
+        //  دالة AJAX لجلب المدربين حسب الخدمة (ديناميكية)
+        // ==========================================================
         [HttpGet]
         public async Task<JsonResult> GetAntrenorlerByHizmet(int hizmetId)
         {
@@ -38,22 +38,18 @@ namespace SporSalon_1.Controllers
                 return Json(new List<object>());
             }
 
-            // 1. تنظيف اسم الخدمة من الفراغات الزائدة
+            // تنظيف اسم الخدمة
             string searchKeyword = hizmet.Ad.Trim();
-
-            // إعداد اللغة التركية للمقارنة الصحيحة (عشان مشاكل İ و I)
             var turkishCulture = new CultureInfo("tr-TR");
 
             var tumAntrenorler = await _context.Antrenorler.ToListAsync();
 
             var uygunAntrenorler = tumAntrenorler
-                .Where(a => !string.IsNullOrEmpty(a.UzmanlikAlani)) // التأكد أن التخصص ليس فارغاً
+                .Where(a => !string.IsNullOrEmpty(a.UzmanlikAlani))
                 .Where(a =>
-                    // نقارن النصين بعد تحويلهم لأحرف كبيرة باللغة التركية وتنظيف المسافات
-                    // هذا يحل مشكلة الأحرف ومشكلة المسافات في آن واحد
+                    // مقارنة ذكية تتجاهل حالة الأحرف والرموز التركية
                     turkishCulture.CompareInfo.IndexOf(a.UzmanlikAlani, searchKeyword, CompareOptions.IgnoreCase) >= 0
                     ||
-                    // احتياط: بحث بسيط في حال فشل المكتبة السابقة
                     a.UzmanlikAlani.ToLower().Contains(searchKeyword.ToLower())
                  )
                 .Select(a => new {
@@ -64,9 +60,10 @@ namespace SporSalon_1.Controllers
 
             return Json(uygunAntrenorler);
         }
-        // ==========================================================
 
-        // 1. صفحة عرض المواعيد
+        // ==========================================================
+        // 1. صفحة عرض المواعيد (Index)
+        // ==========================================================
         public async Task<IActionResult> Index()
         {
             var randevularQuery = _context.Randevular
@@ -74,7 +71,7 @@ namespace SporSalon_1.Controllers
                 .Include(r => r.Hizmet)
                 .Include(r => r.Uye);
 
-            // 👑 أدمن: يرى كل شيء
+            // 👑 أدمن: يرى كل الحجوزات
             if (User.IsInRole("Admin"))
             {
                 return View(await randevularQuery.OrderByDescending(r => r.Tarih).ToListAsync());
@@ -91,23 +88,48 @@ namespace SporSalon_1.Controllers
                     .ToListAsync());
             }
         }
-        // 1. أضف هذه الدالة الجديدة لصفحة النجاح
+
+        // صفحة النجاح (بعد الحجز)
         public IActionResult Success()
         {
             return View();
         }
 
-
-        // 2. صفحة الحجز الجديدة - GET
-        public IActionResult Create()
+        // ==========================================================
+        // 2. صفحة الحجز الجديدة - GET (تم التعديل هنا ✅)
+        // ==========================================================
+        public IActionResult Create(int? hizmetId) // استقبال رقم الخدمة الاختياري
         {
-            // نرسل القوائم (قائمة المدربين ستكون موجودة لكن الجافاسكربت سيقوم بتحديثها)
+            // 1. إذا جاء المستخدم من زر "Randevu Al" الخاص بخدمة معينة
+            if (hizmetId.HasValue)
+            {
+                var secilenHizmet = _context.Hizmetler.Find(hizmetId.Value);
+                if (secilenHizmet != null)
+                {
+                    // نرسل الخدمة المختارة للواجهة لقفل الحقل
+                    ViewBag.PreSelectedHizmet = secilenHizmet;
+
+                    // تحديد القيمة في القائمة المنسدلة أيضاً (احتياط)
+                    ViewData["HizmetId"] = new SelectList(_context.Hizmetler, "Id", "Ad", hizmetId.Value);
+                }
+                else
+                {
+                    ViewData["HizmetId"] = new SelectList(_context.Hizmetler, "Id", "Ad");
+                }
+            }
+            else
+            {
+                // الوضع الطبيعي: قائمة فارغة يختار منها المستخدم
+                ViewData["HizmetId"] = new SelectList(_context.Hizmetler, "Id", "Ad");
+            }
+
             ViewData["AntrenorId"] = new SelectList(_context.Antrenorler, "Id", "AdSoyad");
-            ViewData["HizmetId"] = new SelectList(_context.Hizmetler, "Id", "Ad");
             return View();
         }
 
+        // ==========================================================
         // 3. عملية الحفظ - POST
+        // ==========================================================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Randevu randevu)
@@ -116,11 +138,10 @@ namespace SporSalon_1.Controllers
             var user = await _userManager.GetUserAsync(User);
             randevu.UyeId = user.Id;
 
-            // 2. جلب البيانات للتحقق
+            // 2. التحقق من التخصص (Validation)
             var secilenAntrenor = await _context.Antrenorler.FindAsync(randevu.AntrenorId);
             var secilenHizmet = await _context.Hizmetler.FindAsync(randevu.HizmetId);
 
-            // --- التحقق من التخصص (كما هو) ---
             if (secilenAntrenor != null && secilenHizmet != null)
             {
                 string uzmanlik = secilenAntrenor.UzmanlikAlani.Trim();
@@ -142,20 +163,29 @@ namespace SporSalon_1.Controllers
                     {
                         string onerilenler = string.Join(", ", uzmanAntrenorler);
                         TempData["Hata"] = $"Hata: Seçilen antrenör ({secilenAntrenor.AdSoyad}) '{secilenHizmet.Ad}' hizmetinde uzman değil!\n" +
-                                           $"Lütfen şu uzmanlardan birini seçiniz: {onerilenler}";
+                                          $"Lütfen şu uzmanlardan birini seçiniz: {onerilenler}";
                     }
                     else
                     {
                         TempData["Hata"] = $"Hata: Seçilen antrenör ({secilenAntrenor.AdSoyad}) bu hizmette uzman değil.";
                     }
 
+                    // إعادة تعبئة القوائم عند الخطأ
                     ViewData["AntrenorId"] = new SelectList(_context.Antrenorler, "Id", "AdSoyad", randevu.AntrenorId);
                     ViewData["HizmetId"] = new SelectList(_context.Hizmetler, "Id", "Ad", randevu.HizmetId);
+
+                    // نحتفظ بحالة "القفل" إذا كانت موجودة
+                    if (randevu.HizmetId != 0)
+                    {
+                        var preHizmet = _context.Hizmetler.Find(randevu.HizmetId);
+                        if (preHizmet != null) ViewBag.PreSelectedHizmet = preHizmet;
+                    }
+
                     return View(randevu);
                 }
             }
 
-            // --- التحقق من تعارض الوقت (كما هو) ---
+            // 3. التحقق من تعارض الوقت (Conflict Check)
             bool isBusy = _context.Randevular.Any(x =>
                 x.AntrenorId == randevu.AntrenorId &&
                 x.Tarih.Date == randevu.Tarih.Date &&
@@ -166,31 +196,37 @@ namespace SporSalon_1.Controllers
                 TempData["Hata"] = "Seçilen antrenör bu saatte dolu! Lütfen başka bir saat seçiniz.";
                 ViewData["AntrenorId"] = new SelectList(_context.Antrenorler, "Id", "AdSoyad", randevu.AntrenorId);
                 ViewData["HizmetId"] = new SelectList(_context.Hizmetler, "Id", "Ad", randevu.HizmetId);
+
+                if (randevu.HizmetId != 0)
+                {
+                    var preHizmet = _context.Hizmetler.Find(randevu.HizmetId);
+                    if (preHizmet != null) ViewBag.PreSelectedHizmet = preHizmet;
+                }
                 return View(randevu);
             }
 
-            // 🚨🚨 الإصلاح هنا: إزالة القيود عن الحقول المرتبطة (Navigation Properties) 🚨🚨
+            // 4. تجاهل التحقق من الخصائص المرتبطة (Navigation Properties)
             ModelState.Remove("Antrenor");
             ModelState.Remove("Hizmet");
             ModelState.Remove("Uye");
 
-            // --- الحفظ النهائي ---
+            // 5. الحفظ النهائي
             if (ModelState.IsValid)
             {
                 _context.Add(randevu);
                 await _context.SaveChangesAsync();
-
-                // التوجيه لصفحة النجاح
                 return RedirectToAction(nameof(Success));
             }
 
-            // في حال فشل الـ Model Validation لأسباب أخرى (مثل التاريخ فارغ)
+            // في حال فشل الـ Model Validation
             ViewData["AntrenorId"] = new SelectList(_context.Antrenorler, "Id", "AdSoyad", randevu.AntrenorId);
             ViewData["HizmetId"] = new SelectList(_context.Hizmetler, "Id", "Ad", randevu.HizmetId);
             return View(randevu);
         }
 
+        // ==========================================================
         // 4. التفاصيل
+        // ==========================================================
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null) return NotFound();
@@ -206,7 +242,9 @@ namespace SporSalon_1.Controllers
             return View(randevu);
         }
 
+        // ==========================================================
         // 5. الحذف - GET
+        // ==========================================================
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null) return NotFound();
@@ -222,7 +260,9 @@ namespace SporSalon_1.Controllers
             return View(randevu);
         }
 
+        // ==========================================================
         // 6. تأكيد الحذف - POST
+        // ==========================================================
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

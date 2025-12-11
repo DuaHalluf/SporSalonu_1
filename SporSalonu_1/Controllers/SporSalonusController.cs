@@ -7,11 +7,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using SporSalon_1.Data;
 using SporSalon_1.Models;
-using Microsoft.AspNetCore.Authorization; // 1. 🚨 إضافة مكتبة الحماية
+using Microsoft.AspNetCore.Authorization; // مكتبة الحماية
 
 namespace SporSalonu_1.Controllers
 {
-    // 2. 🚨 حماية الكنترولر: الأدمن فقط يدير الصالات
+    // 🔒 الحماية العامة: كل الوظائف محجوبة إلا للأدمن بشكل افتراضي
     [Authorize(Roles = "Admin")]
     public class SporSalonusController : Controller
     {
@@ -22,13 +22,19 @@ namespace SporSalonu_1.Controllers
             _context = context;
         }
 
-        // GET: SporSalonus
+        // =========================================================
+        // ✅ السماح للجميع (حتى غير المسجلين) برؤية القائمة
+        // =========================================================
+        [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
             return View(await _context.SporSalonlari.ToListAsync());
         }
 
-        // GET: SporSalonus/Details/5
+        // =========================================================
+        // ✅ السماح للجميع برؤية التفاصيل
+        // =========================================================
+        [AllowAnonymous]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -46,13 +52,14 @@ namespace SporSalonu_1.Controllers
             return View(sporSalonu);
         }
 
-        // GET: SporSalonus/Create
+        // =========================================================
+        // 🔒 الإضافة (محمية تلقائياً بسبب Authorize في الأعلى)
+        // =========================================================
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: SporSalonus/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Ad,Adres,CalismaSaatleri,Telefon")] SporSalonu sporSalonu)
@@ -66,7 +73,9 @@ namespace SporSalonu_1.Controllers
             return View(sporSalonu);
         }
 
-        // GET: SporSalonus/Edit/5
+        // =========================================================
+        // 🔒 التعديل (محمية تلقائياً)
+        // =========================================================
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -82,7 +91,6 @@ namespace SporSalonu_1.Controllers
             return View(sporSalonu);
         }
 
-        // POST: SporSalonus/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Ad,Adres,CalismaSaatleri,Telefon")] SporSalonu sporSalonu)
@@ -115,7 +123,9 @@ namespace SporSalonu_1.Controllers
             return View(sporSalonu);
         }
 
-        // GET: SporSalonus/Delete/5
+        // =========================================================
+        // 🔒 الحذف (محمية تلقائياً)
+        // =========================================================
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -133,16 +143,14 @@ namespace SporSalonu_1.Controllers
             return View(sporSalonu);
         }
 
-        // POST: SporSalonus/Delete/5
-        // POST: SporSalonus/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             // 1. جلب الصالة مع كل تفاصيلها (المدربين، الخدمات، والمواعيد المرتبطة بهم)
             var sporSalonu = await _context.SporSalonlari
-                .Include(s => s.Antrenorler).ThenInclude(a => a.Randevular) // جلب المدربين ومواعيدهم
-                .Include(s => s.Hizmetler).ThenInclude(h => h.Randevular)   // جلب الخدمات ومواعيدها
+                .Include(s => s.Antrenorler).ThenInclude(a => a.Randevular)
+                .Include(s => s.Hizmetler).ThenInclude(h => h.Randevular)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             if (sporSalonu != null)
@@ -168,7 +176,6 @@ namespace SporSalonu_1.Controllers
                     {
                         if (hizmet.Randevular != null && hizmet.Randevular.Any())
                         {
-                            // قد تكون حذفت في الخطوة السابقة إذا كانت مشتركة، لكن للتأكيد
                             _context.Randevular.RemoveRange(hizmet.Randevular);
                         }
                     }

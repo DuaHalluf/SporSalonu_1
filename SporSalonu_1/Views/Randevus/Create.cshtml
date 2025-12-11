@@ -33,9 +33,27 @@
 
                 <div class="form-group mb-3">
                     <label asp-for="HizmetId" class="control-label fw-bold">Hizmet (Branş)</label>
-                    <select asp-for="HizmetId" class="form-control" asp-items="ViewBag.HizmetId" id="HizmetList">
-                        <option value="">-- Hizmet Seçiniz --</option>
-                    </select>
+
+                    @if (ViewBag.PreSelectedHizmet != null)
+                    {
+                        <div class="input-group">
+                            <span class="input-group-text bg-light text-success border-end-0">
+                                <i class="bi bi-check-circle-fill"></i>
+                            </span>
+                            <input type="text" class="form-control bg-white border-start-0" value="@ViewBag.PreSelectedHizmet.Ad" readonly />
+                        </div>
+
+                        <input type="hidden" asp-for="HizmetId" value="@ViewBag.PreSelectedHizmet.Id" id="HizmetIdHidden" />
+
+                        <small class="text-muted">Bu randevu <strong>@ViewBag.PreSelectedHizmet.Ad</strong> hizmeti için oluşturuluyor.</small>
+                    }
+                    else
+                    {
+                        <select asp-for="HizmetId" class="form-control" asp-items="ViewBag.HizmetId" id="HizmetList">
+                            <option value="">-- Hizmet Seçiniz --</option>
+                        </select>
+                    }
+                    <span asp-validation-for="HizmetId" class="text-danger"></span>
                 </div>
 
                 <div class="form-group mb-3">
@@ -44,6 +62,7 @@
                         <option value="">-- Önce Hizmet Seçiniz --</option>
                     </select>
                     <small class="text-muted">Sadece seçilen hizmette uzman antrenörler listelenir.</small>
+                    <span asp-validation-for="AntrenorId" class="text-danger"></span>
                 </div>
 
                 <div class="form-group mt-4 text-center">
@@ -64,45 +83,59 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        $(document).ready(function () {
-            // عند تغيير الخدمة
-            $("#HizmetList").change(function () {
-                var hizmetId = $(this).val();
-                var antrenorList = $("#AntrenorList");
+        // دالة موحدة لجلب المدربين لكي نستخدمها في الحالتين
+        function loadAntrenorler(hizmetId) {
+            var antrenorList = $("#AntrenorList");
 
-                // تفريغ قائمة المدربين
-                antrenorList.empty();
-                antrenorList.append('<option value="">-- Yükleniyor... --</option>');
-                antrenorList.prop("disabled", true);
+            // إعادة تعيين القائمة
+            antrenorList.empty();
+            antrenorList.append('<option value="">-- Yükleniyor... --</option>');
+            antrenorList.prop("disabled", true);
 
-                if (hizmetId) {
-                    // طلب AJAX لجلب المدربين
-                    $.ajax({
-                        url: '/Randevus/GetAntrenorlerByHizmet', // رابط الدالة التي أنشأناها
-                        type: 'GET',
-                        data: { hizmetId: hizmetId },
-                        success: function (data) {
-                            antrenorList.empty(); // مسح "جاري التحميل"
+            if (hizmetId) {
+                $.ajax({
+                    url: '/Randevus/GetAntrenorlerByHizmet', // تأكد أن الاسم يطابق الكنترولر الجمع
+                    type: 'GET',
+                    data: { hizmetId: hizmetId },
+                    success: function (data) {
+                        antrenorList.empty(); // مسح "جاري التحميل"
 
-                            if (data.length > 0) {
-                                antrenorList.append('<option value="">-- Antrenör Seçiniz --</option>');
-                                // إضافة المدربين القادمين من السيرفر
-                                $.each(data, function (i, item) {
-                                    antrenorList.append($('<option></option>').val(item.id).html(item.ad));
-                                });
-                                antrenorList.prop("disabled", false); // تفعيل القائمة
-                            } else {
-                                antrenorList.append('<option value="">-- Bu hizmet için uzman bulunamadı --</option>');
-                            }
-                        },
-                        error: function () {
-                            alert("Antrenörler yüklenirken bir hata oluştu!");
+                        if (data.length > 0) {
+                            antrenorList.append('<option value="">-- Antrenör Seçiniz --</option>');
+                            $.each(data, function (i, item) {
+                                antrenorList.append($('<option></option>').val(item.id).html(item.ad));
+                            });
+                            antrenorList.prop("disabled", false); // تفعيل القائمة
+                        } else {
+                            antrenorList.append('<option value="">-- Bu hizmet için uzman bulunamadı --</option>');
                         }
-                    });
-                } else {
-                    antrenorList.append('<option value="">-- Önce Hizmet Seçiniz --</option>');
-                }
+                    },
+                    error: function () {
+                        antrenorList.empty();
+                        antrenorList.append('<option value="">-- Hata oluştu --</option>');
+                        alert("Antrenörler yüklenirken bir hata oluştu!");
+                    }
+                });
+            } else {
+                antrenorList.empty();
+                antrenorList.append('<option value="">-- Önce Hizmet Seçiniz --</option>');
+            }
+        }
+
+        $(document).ready(function () {
+            // السيناريو 1: المستخدم يختار من القائمة المنسدلة (الحجز العادي)
+            $("#HizmetList").change(function () {
+                var selectedId = $(this).val();
+                loadAntrenorler(selectedId);
             });
+
+            // السيناريو 2: الصفحة فتحت والخدمة محددة مسبقاً (الحجز الموجه)
+            // نبحث عن الحقل المخفي الذي وضعناه في الـ IF
+            var preSelectedId = $("#HizmetIdHidden").val();
+            if (preSelectedId) {
+                // استدعاء الدالة فوراً عند تحميل الصفحة
+                loadAntrenorler(preSelectedId);
+            }
         });
     </script>
 }

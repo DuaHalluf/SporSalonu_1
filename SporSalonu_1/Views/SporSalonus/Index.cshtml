@@ -1,53 +1,161 @@
 ﻿@model IEnumerable<SporSalon_1.Models.SporSalonu>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Spor Salonları";
 }
 
-<h1>Index</h1>
+<div class="container mt-5 mb-4">
+    <div class="row align-items-center border-bottom pb-3">
+        <div class="col-md-6">
+            <h2 class="text-primary fw-bold mb-0">
+                <i class="fas fa-building me-2"></i> Anlaşmalı Spor Salonları
+            </h2>
+            <p class="text-muted mb-0 mt-1">Size en yakın salonu bulun ve antrenmana başlayın.</p>
+        </div>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Ad)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Adres)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CalismaSaatleri)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Telefon)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Ad)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Adres)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CalismaSaatleri)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Telefon)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+        <div class="col-md-6 mt-3 mt-md-0 d-flex gap-2 justify-content-md-end">
+            <input type="text" id="searchInput" class="form-control w-50 rounded-pill" placeholder="Salon veya Bölge Ara...">
+
+            @if (User.IsInRole("Admin"))
+            {
+                <a asp-action="Create" class="btn btn-success rounded-pill shadow px-3 d-flex align-items-center">
+                    <i class="fas fa-plus me-2"></i> <span class="d-none d-sm-inline">Yeni Ekle</span>
+                </a>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="container mb-5">
+    <div class="row" id="salonContainer">
+        @if (!Model.Any())
+        {
+            <div class="col-12 text-center text-muted">
+                <div class="p-5 bg-light rounded-3">
+                    <h3>Henüz kayıtlı spor salonu bulunmamaktadır.</h3>
+                </div>
+            </div>
+        }
+        else
+        {
+            @foreach (var item in Model)
+            {
+                <div class="col-md-4 mb-4 salon-card" data-search="@item.Ad.ToLower() @item.Adres.ToLower()">
+                    <div class="card h-100 border-0 shadow-sm hover-card">
+
+                        <div class="position-relative overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=600&q=80"
+                                 class="card-img-top zoom-effect"
+                                 alt="Gym Image"
+                                 style="height: 200px; object-fit: cover;">
+
+                            <div class="position-absolute top-0 end-0 m-2">
+                                <span class="badge bg-primary shadow">Aktif</span>
+                            </div>
+
+                            <div class="position-absolute bottom-0 start-0 w-100 bg-dark bg-opacity-75 text-white p-1 ps-3 small">
+                                <i class="fas fa-wifi me-2" title="WiFi"></i>
+                                <i class="fas fa-shower me-2" title="Duş"></i>
+                                <i class="fas fa-parking me-2" title="Otopark"></i>
+                                <i class="fas fa-music" title="Müzik Sistemi"></i>
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+                            <h4 class="card-title fw-bold text-dark mb-3">@item.Ad</h4>
+
+                            <div class="d-flex align-items-start mb-2">
+                                <i class="fas fa-map-marker-alt text-danger mt-1 me-2" style="width:20px;"></i>
+                                <a href="https://www.google.com/maps/search/?api=1&query=@item.Adres" target="_blank" class="text-muted text-decoration-none hover-link">
+                                    @item.Adres <i class="fas fa-external-link-alt small ms-1"></i>
+                                </a>
+                            </div>
+
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="fas fa-clock text-warning me-2" style="width:20px;"></i>
+                                <span class="text-muted">@item.CalismaSaatleri</span>
+                            </div>
+
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-phone text-success me-2" style="width:20px;"></i>
+                                <a href="tel:@item.Telefon" class="text-muted text-decoration-none hover-link">@item.Telefon</a>
+                            </div>
+                        </div>
+
+                        <div class="card-footer bg-white border-top-0 pb-3">
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-between">
+                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-info btn-sm flex-fill">
+                                    <i class="fas fa-info-circle"></i> Detay
+                                </a>
+
+                                @if (User.IsInRole("Admin"))
+                                {
+                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-warning btn-sm flex-fill">
+                                        <i class="fas fa-edit"></i> Düzenle
+                                    </a>
+                                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-outline-danger btn-sm flex-fill">
+                                        <i class="fas fa-trash"></i> Sil
+                                    </a>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+
+    <div id="noResults" class="text-center mt-5 d-none">
+        <h4 class="text-muted">Aradığınız kriterlere uygun salon bulunamadı.</h4>
+    </div>
+</div>
+
+<style>
+    .hover-card {
+        transition: all 0.3s ease;
+    }
+
+        .hover-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 1rem 3rem rgba(0,0,0,.175) !important;
+        }
+
+    .zoom-effect {
+        transition: transform 0.5s ease;
+    }
+
+    .hover-card:hover .zoom-effect {
+        transform: scale(1.1);
+    }
+
+    .hover-link:hover {
+        color: #0d6efd !important; /* لون أزرق عند المرور */
+        text-decoration: underline !important;
+    }
+</style>
+
+<script>
+    document.getElementById('searchInput').addEventListener('keyup', function() {
+        var searchValue = this.value.toLowerCase();
+        var cards = document.getElementsByClassName('salon-card');
+        var hasResults = false;
+
+        for (var i = 0; i < cards.length; i++) {
+            var searchData = cards[i].getAttribute('data-search');
+            if (searchData.includes(searchValue)) {
+                cards[i].style.display = "block"; // إظهار
+                hasResults = true;
+            } else {
+                cards[i].style.display = "none"; // إخفاء
+            }
+        }
+
+        // إظهار رسالة "لا يوجد نتائج"
+        var noResultsMsg = document.getElementById('noResults');
+        if (!hasResults) {
+            noResultsMsg.classList.remove('d-none');
+        } else {
+            noResultsMsg.classList.add('d-none');
+        }
+    });
+</script>
