@@ -115,7 +115,6 @@ namespace SporSalon_1.Controllers
         // GET: Randevus/Create
         // نستقبل الخدمة (hizmetId) والمدرب (antrenorId) كخيارات
         // GET: Randevus/Create
-        // GET: Randevus/Create
         public IActionResult Create(int? hizmetId, int? antrenorId, int? sporSalonuId) // تم تعديلها لاستقبال sporSalonuId
         {
             // تخزين رقم الصالة ليرسله الجافاسكربت لاحقاً في الـ AJAX
