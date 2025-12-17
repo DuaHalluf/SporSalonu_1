@@ -35,7 +35,6 @@ namespace SporSalonu_1.Controllers
         // ✅ السماح للجميع برؤية التفاصيل
         // =========================================================
         // GET: SporSalonus/Details/5
-        // GET: SporSalonus/Details/5
         [AllowAnonymous]
         public async Task<IActionResult> Details(int? id)
         {
