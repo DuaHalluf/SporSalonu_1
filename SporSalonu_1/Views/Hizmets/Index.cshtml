@@ -39,9 +39,14 @@
 
                     <td class="text-center">
 
-                        <a asp-controller="Randevus" asp-action="Create" asp-route-hizmetId="@item.Id" class="btn btn-success btn-sm">
-                            Randevu Al
+                        <a asp-controller="Randevus"
+                           asp-action="Create"
+                           asp-route-hizmetId="@item.Id"
+                           asp-route-sporSalonuId="@item.SporSalonuId"
+                           class="btn btn-success btn-sm">
+                            <i class="bi bi-calendar-check me-1"></i> Randevu Al
                         </a>
+
                         <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info text-white me-1">Detaylar</a>
 
                         @if (User.IsInRole("Admin"))

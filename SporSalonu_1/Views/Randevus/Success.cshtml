@@ -4,41 +4,41 @@
 
 <div class="container mt-5">
 
-    <div class="text-center mb-5">
-        <div class="display-1 text-success">
-            <i class="bi bi-check-circle-fill"></i>
+    <div class="text-center mb-5 animate__animated animate__fadeInDown">
+        <div class="display-1 text-success mb-3">
+            <i class="bi bi-check-circle-fill shadow-sm rounded-circle"></i>
         </div>
         <h1 class="display-4 fw-bold text-success">Randevunuz Oluşturuldu!</h1>
-        <p class="lead text-muted">İşleminiz başarıyla tamamlanmıştır. Ne yapmak istersiniz?</p>
+        <p class="lead text-muted">İşleminiz başarıyla tamamlanmıştır. Antrenörünüz sizi bekliyor olacak.</p>
     </div>
 
     <div class="row justify-content-center g-4">
 
         <div class="col-md-5 col-lg-4">
-            <div class="card h-100 shadow-sm border-info text-center hover-shadow">
+            <div class="card h-100 shadow-sm border-0 border-top border-5 border-info text-center hover-shadow rounded-4">
                 <div class="card-body py-5">
                     <div class="fs-1 text-info mb-3">
-                        <i class="bi bi-list-stars"></i>
+                        <i class="bi bi-geo-alt-fill"></i>
                     </div>
-                    <h3 class="card-title">Hizmetleri İncele</h3>
-                    <p class="card-text text-muted">Diğer spor hizmetlerimizi ve fiyatları incelemek ister misiniz?</p>
+                    <h3 class="card-title fw-bold">Salonları Keşfet</h3>
+                    <p class="card-text text-muted px-3">Diğer spor salonlarımızı ve sundukları özel imkanları incelemek ister misiniz?</p>
 
-                    <a asp-controller="Hizmets" asp-action="Index" class="btn btn-info text-white btn-lg w-100 mt-3">
-                        Hizmetlere Git
+                    <a asp-controller="SporSalonus" asp-items="" asp-action="Index" class="btn btn-info text-white btn-lg w-100 mt-3 rounded-pill shadow-sm">
+                        Salonlara Git
                     </a>
                 </div>
             </div>
         </div>
 
         <div class="col-md-5 col-lg-4">
-            <div class="card h-100 shadow-sm border-secondary text-center hover-shadow">
+            <div class="card h-100 shadow-sm border-0 border-top border-5 border-secondary text-center hover-shadow rounded-4">
                 <div class="card-body py-5">
                     <div class="fs-1 text-secondary mb-3">
-                        <i class="bi bi-house-door"></i>
+                        <i class="bi bi-house-door-fill"></i>
                     </div>
-                    <h3 class="card-title">Ana Sayfaya Git</h3>
-                    <p class="card-text text-muted">Spor salonu ana sayfasına dönüp genel akışı görebilirsiniz.</p>
-                    <a asp-controller="Home" asp-action="Index" class="btn btn-secondary btn-lg w-100 mt-3">
+                    <h3 class="card-title fw-bold">Ana Sayfa</h3>
+                    <p class="card-text text-muted px-3">Spor salonu ana sayfasına dönüp genel akışı ve duyuruları görebilirsiniz.</p>
+                    <a asp-controller="Home" asp-action="Index" class="btn btn-secondary btn-lg w-100 mt-3 rounded-pill shadow-sm">
                         Ana Sayfaya Git
                     </a>
                 </div>
@@ -50,11 +50,16 @@
 
 <style>
     .hover-shadow {
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+        border-radius: 20px !important;
     }
 
         .hover-shadow:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 1rem 3rem rgba(0,0,0,.175) !important;
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,.1) !important;
         }
+
+    .border-top {
+        border-top-width: 6px !important;
+    }
 </style>

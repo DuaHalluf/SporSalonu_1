@@ -92,8 +92,8 @@
         <div class="mt-4">
             @if (User.Identity.IsAuthenticated)
             {
-                <a href="/Randevus/Create" class="btn btn-success btn-lg px-4 py-3 fw-bold rounded-pill shadow hover-scale">
-                    <i class="bi bi-calendar-check me-2"></i> Hemen Randevu Al
+                <a asp-controller="SporSalonus" asp-action="Index" class="btn btn-success btn-lg px-4 py-3 fw-bold me-2 shadow">
+                    <i class="fas fa-calendar-check me-2"></i> Hemen Randevu Al
                 </a>
 
                 <a asp-controller="YapayZeka" asp-action="Index" class="btn btn-info btn-lg px-4 py-3 fw-bold text-white rounded-pill shadow hover-scale ms-2">

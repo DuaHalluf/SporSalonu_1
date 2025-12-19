@@ -1,171 +1,191 @@
 ﻿@model SporSalon_1.Models.SporSalonu
 
 @{
-    ViewData["Title"] = "Salon Detayları";
+    ViewData["Title"] = Model.Ad + " Detayları";
 }
 
 <div class="container mt-5 mb-5">
 
-    <a asp-action="Index" class="btn btn-outline-secondary rounded-pill mb-4 px-3">
-        <i class="fas fa-arrow-left me-2"></i> Listeye Dön
+    <a asp-action="Index" class="btn btn-outline-secondary rounded-pill mb-4 px-3 shadow-sm">
+        <i class="fas fa-arrow-left me-2"></i> Salon Listesine Dön
     </a>
 
-    <div class="card shadow-lg border-0 overflow-hidden rounded-3">
-
-        <div class="position-relative" style="height: 350px;">
+    <div class="card shadow-lg border-0 overflow-hidden rounded-4">
+        <div class="position-relative" style="height: 400px;">
             <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=1200&q=80"
                  class="w-100 h-100"
-                 style="object-fit: cover; filter: brightness(0.7);"
+                 style="object-fit: cover; filter: brightness(0.65);"
                  alt="Gym Cover">
 
-            <div class="position-absolute bottom-0 start-0 p-4 w-100 text-white"
-                 style="background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);">
-                <h1 class="display-4 fw-bold mb-0">@Model.Ad</h1>
-                <p class="lead mb-0"><i class="fas fa-map-marker-alt text-warning me-2"></i> @Model.Adres</p>
+            <div class="position-absolute bottom-0 start-0 p-5 w-100 text-white"
+                 style="background: linear-gradient(to top, rgba(0,0,0,0.85), transparent);">
+                <h1 class="display-3 fw-bold mb-2">@Model.Ad</h1>
+                <p class="lead mb-0 fs-4"><i class="fas fa-map-marker-alt text-warning me-2"></i> @Model.Adres</p>
             </div>
 
             <div class="position-absolute top-0 end-0 m-4">
-                <span class="badge bg-success fs-6 shadow px-3 py-2">
+                <span class="badge bg-success fs-6 shadow-sm px-4 py-2 rounded-pill">
                     <i class="fas fa-check-circle me-1"></i> Hizmete Açık
                 </span>
             </div>
         </div>
 
-        <div class="card-body p-5">
-            <div class="row">
-
+        <div class="card-body p-lg-5 p-4">
+            <div class="row g-5">
                 <div class="col-md-7">
-                    <h4 class="text-primary fw-bold mb-4 border-bottom pb-2">Salon Bilgileri</h4>
+                    <h4 class="text-primary fw-bold mb-4 border-bottom pb-3">
+                        <i class="fas fa-info-circle me-2"></i> Salon Bilgileri
+                    </h4>
 
-                    <div class="mb-4 d-flex align-items-center">
-                        <div class="bg-light p-3 rounded-circle me-3 text-primary">
-                            <i class="fas fa-clock fa-2x"></i>
+                    <div class="row">
+                        <div class="col-sm-6 mb-4">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-primary bg-opacity-10 p-3 rounded-3 me-3 text-primary">
+                                    <i class="fas fa-clock fa-2x"></i>
+                                </div>
+                                <div>
+                                    <h6 class="text-muted mb-1 small uppercase fw-bold">Çalışma Saatleri</h6>
+                                    <h5 class="fw-bold mb-0">@Model.CalismaSaatleri</h5>
+                                </div>
+                            </div>
                         </div>
-                        <div>
-                            <h6 class="text-muted mb-0">Çalışma Saatleri</h6>
-                            <h4 class="fw-bold text-dark">@Model.CalismaSaatleri</h4>
+
+                        <div class="col-sm-6 mb-4">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-success bg-opacity-10 p-3 rounded-3 me-3 text-success">
+                                    <i class="fas fa-phone fa-2x"></i>
+                                </div>
+                                <div>
+                                    <h6 class="text-muted mb-1 small uppercase fw-bold">İletişim</h6>
+                                    <h5 class="fw-bold mb-0">@Model.Telefon</h5>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="mb-4 d-flex align-items-center">
-                        <div class="bg-light p-3 rounded-circle me-3 text-success">
-                            <i class="fas fa-phone fa-2x"></i>
-                        </div>
-                        <div>
-                            <h6 class="text-muted mb-0">İletişim Numarası</h6>
-                            <h4 class="fw-bold text-dark">@Model.Telefon</h4>
-                        </div>
-                    </div>
-
-                    <div class="mt-4">
-                        <h5 class="fw-bold mb-3"><i class="fas fa-star text-warning me-2"></i> Sunulan İmkanlar</h5>
-                        <div class="d-flex gap-3 flex-wrap">
-                            <span class="badge bg-secondary p-2"><i class="fas fa-wifi me-1"></i> Ücretsiz WiFi</span>
-                            <span class="badge bg-secondary p-2"><i class="fas fa-shower me-1"></i> Duş Alanları</span>
-                            <span class="badge bg-secondary p-2"><i class="fas fa-parking me-1"></i> Otopark</span>
-                            <span class="badge bg-secondary p-2"><i class="fas fa-music me-1"></i> Müzik Sistemi</span>
-                            <span class="badge bg-secondary p-2"><i class="fas fa-box me-1"></i> Kilitli Dolap</span>
+                    <div class="mt-4 p-4 bg-light rounded-4 border-0">
+                        <h5 class="fw-bold mb-3 text-dark"><i class="fas fa-star text-warning me-2"></i> Sunulan İmkanlar</h5>
+                        <div class="d-flex gap-2 flex-wrap">
+                            <span class="badge bg-white text-dark border p-2 px-3 shadow-sm rounded-pill"><i class="fas fa-wifi text-primary me-2"></i>Ücretsiz WiFi</span>
+                            <span class="badge bg-white text-dark border p-2 px-3 shadow-sm rounded-pill"><i class="fas fa-shower text-info me-2"></i>Duş Alanları</span>
+                            <span class="badge bg-white text-dark border p-2 px-3 shadow-sm rounded-pill"><i class="fas fa-parking text-success me-2"></i>Otopark</span>
+                            <span class="badge bg-white text-dark border p-2 px-3 shadow-sm rounded-pill"><i class="fas fa-music text-danger me-2"></i>Müzik Sistemi</span>
+                            <span class="badge bg-white text-dark border p-2 px-3 shadow-sm rounded-pill"><i class="fas fa-box text-warning me-2"></i>Kilitli Dolap</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="col-md-5 border-start ps-md-5 mt-4 mt-md-0">
-
-                    <div class="card bg-light border-0 p-4 mb-4">
-                        <h5 class="fw-bold mb-3">Hızlı İşlemler</h5>
-
-                        <a href="tel:@Model.Telefon" class="btn btn-success w-100 mb-2 py-2">
-                            <i class="fas fa-phone-alt me-2"></i> Hemen Ara
-                        </a>
-
-                        <a href="https://maps.google.com/?q=@Model.Adres" target="_blank" class="btn btn-primary w-100 mb-2 py-2">
-                            <i class="fas fa-map-marked-alt me-2"></i> Haritada Göster
-                        </a>
-                    </div>
-
-                    @if (User.IsInRole("Admin"))
-                    {
-                        <div class="card border-warning p-3">
-                            <h6 class="text-warning fw-bold mb-2"><i class="fas fa-user-shield me-2"></i> Yönetici Paneli</h6>
-                            <div class="d-flex gap-2">
-                                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-warning flex-fill">
-                                    <i class="fas fa-edit"></i> Düzenle
-                                </a>
-                                <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-outline-danger flex-fill">
-                                    <i class="fas fa-trash"></i> Sil
-                                </a>
-                            </div>
+                <div class="col-md-5">
+                    <div class="sticky-top" style="top: 20px;">
+                        <div class="card bg-dark text-white border-0 p-4 mb-4 rounded-4 shadow">
+                            <h5 class="fw-bold mb-4 border-bottom border-secondary pb-2">Hızlı İşlemler</h5>
+                            <a href="tel:@Model.Telefon" class="btn btn-success btn-lg w-100 mb-3 py-3 rounded-pill shadow-sm">
+                                <i class="fas fa-phone-alt me-2"></i> Hemen Ara
+                            </a>
+                            <a href="https://www.google.com/maps/search/?api=1&query=@Model.Adres" target="_blank" class="btn btn-outline-light btn-lg w-100 py-3 rounded-pill">
+                                <i class="fas fa-map-marked-alt me-2"></i> Haritada Göster
+                            </a>
                         </div>
-                    }
 
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <div class="card border-warning border-2 p-3 rounded-4 bg-warning bg-opacity-10">
+                                <h6 class="text-dark fw-bold mb-3"><i class="fas fa-user-shield me-2"></i> Yönetici Paneli</h6>
+                                <div class="d-flex gap-2">
+                                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning flex-fill fw-bold rounded-pill text-white">
+                                        <i class="fas fa-edit me-1"></i> Düzenle
+                                    </a>
+                                    <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger flex-fill fw-bold rounded-pill">
+                                        <i class="fas fa-trash me-1"></i> Sil
+                                    </a>
+                                </div>
+                            </div>
+                        }
+                    </div>
                 </div>
             </div>
 
-           
+            <div class="row mt-5 pt-5 border-top">
+                <div class="col-12 mb-5">
+                    <h2 class="display-6 fw-bold text-dark mb-2">
+                        <i class="fas fa-dumbbell text-primary me-3"></i> Bu Salonda Sunulan Hizmetler
+                    </h2>
+                    <p class="lead text-muted">Hedefinize en uygun hizmeti seçerek profesyonel eğitim almaya başlayın.</p>
+                </div>
 
-                <div class="row">
-                    <div class="col-12 mb-4">
-                        <h3 class="text-primary fw-bold">
-                            <i class="fas fa-dumbbell me-2"></i> Bu Salonda Sunulan Hizmetler
-                        </h3>
-                        <p class="text-muted">Hedefinize uygun antrenman programını seçin ve hemen başlayın.</p>
-                    </div>
-
-                    @if (ViewBag.TumHizmetler != null)
+                @if (ViewBag.TumHizmetler != null)
+                {
+                    @foreach (var hizmet in ViewBag.TumHizmetler as List<SporSalon_1.Models.Hizmet>)
                     {
-                        @foreach (var hizmet in ViewBag.TumHizmetler as List<SporSalon_1.Models.Hizmet>)
-                        {
-                            <div class="col-md-4 mb-4">
-                                <div class="card border-0 shadow-sm h-100 hover-card">
-                                    <div class="card-body p-4 position-relative">
-
-                                        <div class="d-flex justify-content-between align-items-start mb-3">
-                                            <div class="bg-primary bg-opacity-10 p-3 rounded-circle text-primary">
-                                                <i class="fas fa-running fa-2x"></i>
-                                            </div>
-                                            <span class="badge bg-success rounded-pill px-3 py-2">
-                                                @hizmet.Ucret TL
-                                            </span>
+                        <div class="col-lg-4 col-md-6 mb-4">
+                            <div class="card border-0 shadow-sm h-100 hover-card rounded-4 p-2">
+                                <div class="card-body p-4 d-flex flex-column">
+                                    <div class="d-flex justify-content-between align-items-start mb-4">
+                                        <div class="bg-primary bg-opacity-10 p-3 rounded-4 text-primary">
+                                            <i class="fas fa-running fa-2x"></i>
                                         </div>
+                                        <span class="badge bg-success bg-opacity-10 text-success fs-5 fw-bold px-3 py-2 rounded-pill">
+                                            @hizmet.Ucret TL
+                                        </span>
+                                    </div>
 
-                                        <h4 class="fw-bold mb-2">@hizmet.Ad</h4>
-                                        <p class="text-muted small mb-3" style="min-height: 40px;">
-                                            @(hizmet.Aciklama ?? "Bu hizmet için profesyonel destek alabilirsiniz.")
-                                        </p>
+                                    <h3 class="fw-bold mb-2 h4">@hizmet.Ad</h3>
+                                    <p class="text-muted flex-grow-1">
+                                        @(hizmet.Aciklama ?? "Uzman antrenörlerimiz eşliğinde profesyonel gelişim hizmeti.")
+                                    </p>
 
-                                        <div class="d-flex align-items-center text-muted small mb-4">
-                                            <i class="far fa-clock me-2"></i>
-                                            <span>Ortalama @hizmet.Sure dk</span>
-                                        </div>
+                                    <hr class="my-4 opacity-25">
+
+                                    <div class="d-flex align-items-center justify-content-between mb-4">
+                                        <span class="text-muted small"><i class="far fa-clock me-2"></i> @hizmet.Sure Dakika</span>
+                                        <span class="text-primary small fw-bold">Kişiye Özel Plan</span>
+                                    </div>
 
                                     <a asp-controller="Randevus"
                                        asp-action="Create"
                                        asp-route-hizmetId="@hizmet.Id"
                                        asp-route-sporSalonuId="@Model.Id"
-                                       class="btn btn-outline-primary w-100 rounded-pill stretched-link">
-                                        Randevu Al <i class="fas fa-chevron-right ms-1"></i>
+                                       class="btn btn-primary btn-lg w-100 rounded-pill shadow-sm mt-auto py-3">
+                                        Randevu Al <i class="fas fa-chevron-right ms-2"></i>
                                     </a>
-
-                                    </div>
                                 </div>
-                            </div>
-                        }
-                    }
-                    else
-                    {
-                        <div class="col-12">
-                            <div class="alert alert-info">
-                                <i class="fas fa-info-circle me-2"></i> Şu anda listelenecek hizmet bulunmuyor.
                             </div>
                         </div>
                     }
-                </div>
+                }
+                else
+                {
+                    <div class="col-12 text-center py-5">
+                        <div class="bg-light p-5 rounded-5 border border-dashed">
+                            <i class="fas fa-info-circle fa-4x text-muted mb-4"></i>
+                            <h4 class="text-muted">Şu anda bu salona atanmış aktif bir hizmet bulunmuyor.</h4>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
 <style>
     .hover-card {
-        transition: transform 0.3s ease;
+        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        border: 1px solid rgba(0,0,0,0.05) !important;
     }
 
         .hover-card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-12px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1) !important;
+            border-color: var(--bs-primary) !important;
+        }
+
+    .rounded-4 {
+        border-radius: 1.2rem !important;
+    }
+
+    .rounded-5 {
+        border-radius: 2rem !important;
+    }
+</style>
         }
 </style>

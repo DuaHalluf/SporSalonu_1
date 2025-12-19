@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using SporSalon_1.Data;
 using SporSalon_1.Models;
-using Microsoft.AspNetCore.Authorization; // مكتبة الحماية
+using Microsoft.AspNetCore.Authorization; 
 
 namespace SporSalonu_1.Controllers
 {
