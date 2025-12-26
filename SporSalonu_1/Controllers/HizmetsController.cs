@@ -22,7 +22,7 @@ namespace SporSalonu_1.Controllers
         }
 
         // GET: Hizmets
-        // ✅ هذه الصفحة متاحة للجميع (ليرى الأعضاء الخدمات)
+        //  هذه الصفحة متاحة للجميع (ليرى الأعضاء الخدمات)
         public async Task<IActionResult> Index()
         {
             var applicationDbContext = _context.Hizmetler.Include(h => h.SporSalonu);
