@@ -1,84 +1,81 @@
-﻿@model SporSalon_1.Models.YapayZekaModel
+﻿using Microsoft.AspNetCore.Mvc;
+using SporSalon_1.Models;
 
-@{
-    ViewData["Title"] = "AI Antrenör";
-}
-
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-5">
-            <div class="card shadow-lg border-0">
-                <div class="card-header bg-dark text-white text-center py-3">
-                    <h3 class="mb-0"><i class="fa fa-robot text-info"></i> AI Akıllı Asistan</h3>
-                    <small>Kişisel Antrenörünüz Sizi Analiz Etsin</small>
-                </div>
-                <div class="card-body bg-light">
-                    <form asp-action="Hesapla" method="post">
-                        <div class="row">
-                            <div class="col-6 mb-3">
-                                <label class="fw-bold">Boyunuz (cm)</label>
-                                <input asp-for="Boy" class="form-control" type="number" placeholder="Örn: 180" required />
-                            </div>
-                            <div class="col-6 mb-3">
-                                <label class="fw-bold">Kilonuz (kg)</label>
-                                <input asp-for="Kilo" class="form-control" type="number" placeholder="Örn: 75" required />
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="fw-bold">Cinsiyet</label>
-                            <select asp-for="Cinsiyet" class="form-select">
-                                <option value="Erkek">Erkek</option>
-                                <option value="Kadin">Kadın</option>
-                            </select>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="fw-bold">Hedefiniz Nedir?</label>
-                            <select asp-for="Hedef" class="form-select">
-                                <option value="Kilo">Kilo Vermek / Yağ Yakmak</option>
-                                <option value="Kas">Kas Kütlesi Artırmak</option>
-                                <option value="Fit">Formda Kalmak</option>
-                                <option value="KiloAl">Kilo Almak (Hacim Kazanmak)</option>
-                            </select>
-                        </div>
-
-                        <div class="d-grid mt-4">
-                            <button type="submit" class="btn btn-info text-white btn-lg fw-bold">
-                                <i class="fa fa-calculator"></i> Analiz Et (AI)
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-        @if (!string.IsNullOrEmpty(Model.SonucBaslik))
+namespace SporSalonu_1.Controllers
+{
+    public class YapayZekaController : Controller
+    {
+        // 1. عرض الصفحة الفارغة
+        [HttpGet]
+        public IActionResult Index()
         {
-            <div class="col-md-7 mt-4 mt-md-0">
-                <div class="card shadow border-0 h-100">
-                    <div class="card-header bg-success text-white">
-                        <h4 class="mb-0"><i class="fa fa-check-circle"></i> Analiz Sonucu</h4>
-                    </div>
-                    <div class="card-body">
-                        <div class="alert alert-primary text-center">
-                            <h4 class="fw-bold mb-0">@Model.SonucBaslik</h4>
-                        </div>
-
-                        <h5 class="text-dark border-bottom pb-2"><i class="fa fa-utensils text-warning"></i> Beslenme Tavsiyesi</h5>
-                        <p class="lead fs-6 text-muted">@Model.Tavsiye</p>
-
-                        <h5 class="text-dark border-bottom pb-2 mt-4"><i class="fa fa-dumbbell text-danger"></i> Önerilen Antrenman Programı</h5>
-                        <p class="lead fs-6 text-muted">@Model.EgzersizPlani</p>
-
-                        <div class="mt-4 text-center">
-                            <a href="/Randevus/Create" class="btn btn-outline-dark btn-lg mt-3">
-                                Bu Programa Uygun Randevu Al <i class="bi bi-arrow-right"></i>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            return View(new YapayZekaModel());
         }
-    </div>
-</div>
+
+        // 2. استقبال البيانات وتحليلها (المحاكاة)
+        [HttpPost]
+        public IActionResult Hesapla(YapayZekaModel model)
+        {
+            if (model.Boy > 0 && model.Kilo > 0)
+            {
+                // حساب مؤشر كتلة الجسم (BMI)
+                double boyMetre = model.Boy / 100.0;
+                double vki = model.Kilo / (boyMetre * boyMetre);
+
+                // --- خوارزمية الذكاء الاصطناعي (تحليل البيانات) ---
+
+                string durum = "";
+                string tavsiye = "";
+                string plan = "";
+
+                // 1. تحليل الوزن
+                if (vki < 18.5)
+                {
+                    durum = "Zayıf (Düşük Kilolu)";
+                    tavsiye = "Günlük kalori ihtiyacınızın 500 kalori üzerine çıkmalısınız. Karbonhidrat ve protein dengesini artırın.";
+                    plan = "Haftada 3 gün Full Body (Tüm Vücut) antrenmanı + Düşük yoğunluklu kardiyo.";
+                }
+                else if (vki >= 18.5 && vki < 25)
+                {
+                    durum = "Normal (İdeal Kilo)";
+                    tavsiye = "Mevcut kilonuzu koruyarak kas kütlesini artırmaya odaklanın. Dengeli beslenme şart.";
+                    plan = "Haftada 4 gün Bölgesel (Split) antrenman + Haftada 1 gün HIIT kardiyo.";
+                }
+                else if (vki >= 25 && vki < 30)
+                {
+                    durum = "Fazla Kilolu";
+                    tavsiye = "Şeker ve hamur işini kesin. Akşam 19:00'dan sonra yemeyin. Su tüketimini artırın.";
+                    plan = "Haftada 3 gün Ağırlık antrenmanı + Her antrenman sonrası 20 dk tempolu yürüyüş.";
+                }
+                else
+                {
+                    durum = "Obezite Sınırı";
+                    tavsiye = "Acilen diyete başlamalısınız. İşlenmiş gıdalardan uzak durun ve sebze ağırlıklı beslenin.";
+                    plan = "Haftada 5 gün sabah aç karnına 45 dk yürüyüş + Hafif ağırlıklarla direnç egzersizleri.";
+                }
+
+                // 2. تعديل النتيجة بناءً على هدف المستخدم
+                if (model.Hedef == "Kas")
+                {
+                    tavsiye += " Kas gelişimi için protein alımını (Kilo x 2g) seviyesine çıkarın.";
+                }
+                else if (model.Hedef == "Zayiflama")
+                {
+                    tavsiye += " Kilo vermek için kalori açığı oluşturmaya odaklanın.";
+                }
+                else if (model.Hedef == "KiloAl")
+                {
+                    tavsiye += " Sağlıklı kilo almak için karbonhidrat miktarını artırın ve öğün atlamayın. (Günde 5-6 öğün).";
+                    plan += " + Ağırlık artırmaya yönelik (Hipertrofi) antrenmanları ekleyin.";
+                }
+
+                // إعداد النتيجة للعرض
+                model.SonucBaslik = $"Vücut Kitle İndeksiniz: {vki:F1} ({durum})";
+                model.Tavsiye = tavsiye;
+                model.EgzersizPlani = plan;
+            }
+
+            return View("Index", model);
+        }
+    }
+}
