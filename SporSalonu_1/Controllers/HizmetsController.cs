@@ -62,7 +62,7 @@ namespace SporSalonu_1.Controllers
         // POST: Hizmets/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin")] // 🚫 للأدمن فقط
+        [Authorize(Roles = "Admin")] //  للأدمن فقط
         public async Task<IActionResult> Create([Bind("Id,Ad,Aciklama,Sure,Ucret,SporSalonuId")] Hizmet hizmet)
         {
             // Remove navigation property validation error if it exists
