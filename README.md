@@ -19,5 +19,4 @@ Data Querying: LINQ (Language Integrated Query)
 API Documentation: Swagger / OpenApi
 
 🔗 Author
-Dua Hallu Edib _g2212210564
-Sakarya Üniversitesi - Web Programlama Proje Ödevi
+Dua Hallu Edib 
